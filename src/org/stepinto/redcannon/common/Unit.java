@@ -1,9 +1,14 @@
 package org.stepinto.redcannon.common;
 
 public abstract class Unit {
+	public Unit(int color, int x, int y) {
+		this(color, new Position(x, y));
+	}
+	
 	public Unit(int color, Position position) {
 		this.color = color;
 		this.position = position;
+		this.alive = true;
 	}
 	
 	public void setAlive(boolean alive) {
@@ -33,6 +38,9 @@ public abstract class Unit {
 				return true;
 		return false;
 	}
+	
+	public abstract String getChineseSymbol();
+	public abstract String getSymbol();
 	
 	public abstract Position[] getLegalMoves(BoardImage board);  
 

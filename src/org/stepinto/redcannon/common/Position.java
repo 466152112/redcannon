@@ -40,6 +40,10 @@ public class Position {
 	public Position move(int dx, int dy) {
 		return new Position(x + dx, y + dy);
 	}
+	
+	public String toString() {
+		return "(" + x + ", " + y + " " + ")";
+	}
 
 	private int x;
 	private int y;

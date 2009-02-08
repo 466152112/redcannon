@@ -3,6 +3,10 @@ package org.stepinto.redcannon.common;
 import java.util.*;
 
 public class Elephant extends Unit {
+	public Elephant(int color, int x, int y) {
+		super(color, x, y);
+	}
+	
 	public Elephant(int color, Position position) {
 		super(color, position);
 	}
@@ -27,4 +31,13 @@ public class Elephant extends Unit {
 		return Arrays.copyOf(legalMoves, count);
 	}
 
+	@Override
+	public String getChineseSymbol() {
+		return getColor() == ChessGame.RED ? "œ‡" : "œÛ";
+	}
+
+	@Override
+	public String getSymbol() {
+		return "E";
+	}
 }

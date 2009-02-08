@@ -3,6 +3,10 @@ package org.stepinto.redcannon.common;
 import java.util.Arrays;
 
 public class Horse extends Unit {
+	public Horse(int color, int x, int y) {
+		super(color, x, y);
+	}
+	
 	public Horse(int color, Position position) {
 		super(color, position);
 	}
@@ -32,5 +36,15 @@ public class Horse extends Unit {
 		}
 		
 		return Arrays.copyOf(legalMoves, count);
+	}
+	
+	@Override
+	public String getChineseSymbol() {
+		return "Âí";
+	}
+
+	@Override
+	public String getSymbol() {
+		return "H";
 	}
 }
