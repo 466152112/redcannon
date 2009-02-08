@@ -39,6 +39,17 @@ public abstract class Unit {
 		return false;
 	}
 	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Unit) {
+			Unit unit = (Unit)obj;
+			return color == unit.color && position.equals(unit.position);
+		}
+		else
+			return false;
+	}
+	
 	public abstract String getChineseSymbol();
 	public abstract String getSymbol();
 	

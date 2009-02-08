@@ -45,4 +45,14 @@ public class Advisor extends Unit {
 	public String getSymbol() {
 		return "A";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Advisor)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }

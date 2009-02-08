@@ -54,4 +54,14 @@ public class King extends Unit {
 	public String getSymbol() {
 		return "K";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof King)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }

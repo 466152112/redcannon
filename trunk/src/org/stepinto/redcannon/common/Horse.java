@@ -47,4 +47,14 @@ public class Horse extends Unit {
 	public String getSymbol() {
 		return "H";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Horse)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }

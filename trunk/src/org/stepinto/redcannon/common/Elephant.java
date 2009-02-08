@@ -40,4 +40,14 @@ public class Elephant extends Unit {
 	public String getSymbol() {
 		return "E";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Elephant)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }

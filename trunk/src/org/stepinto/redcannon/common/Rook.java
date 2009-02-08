@@ -53,4 +53,14 @@ public class Rook extends Unit {
 	public String getSymbol() {
 		return "R";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Rook)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }
