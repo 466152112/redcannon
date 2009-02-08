@@ -3,6 +3,10 @@ package org.stepinto.redcannon.common;
 import java.util.*;
 
 public class Pawn extends Unit {
+	public Pawn(int color, int x, int y) {
+		super(color, x, y);
+	}
+	
 	public Pawn(int color, Position position) {
 		super(color, position);
 	}
@@ -38,5 +42,15 @@ public class Pawn extends Unit {
 			else
 				return new Position[0];
 		}
+	}
+	
+	@Override
+	public String getChineseSymbol() {
+		return getColor() == ChessGame.RED ? "±ø" : "×ä";
+	}
+
+	@Override
+	public String getSymbol() {
+		return "P";
 	}
 }
