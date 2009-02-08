@@ -53,4 +53,14 @@ public class Pawn extends Unit {
 	public String getSymbol() {
 		return "P";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Pawn)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }

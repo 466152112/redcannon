@@ -65,6 +65,26 @@ public class BoardImage {
 					ret[count++] = units[x][y];
 		return Arrays.copyOf(ret, count);
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof BoardImage) {
+			BoardImage board = (BoardImage)obj;
+			for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
+				for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++) {
+					if (units[x][y] == null) {
+						if (board.units[x][y] != null)
+							return false;
+					}
+					else {
+						if (!units[x][y].equals(board.units[x][y]))
+							return false;
+					}
+				}
+			return true;
+		}
+		else
+			return false;
+	}
 
 	private Unit units[][];
 }

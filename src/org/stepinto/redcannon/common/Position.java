@@ -34,7 +34,7 @@ public class Position {
 	}
 	
 	public static boolean isValid(int x, int y) {
-		return 0 < x && x < ChessGame.BOARD_WIDTH && 0 < y && y < ChessGame.BOARD_HEIGHT;
+		return 0 <= x && x < ChessGame.BOARD_WIDTH && 0 <= y && y < ChessGame.BOARD_HEIGHT;
 	}
 	
 	public Position move(int dx, int dy) {

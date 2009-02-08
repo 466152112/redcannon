@@ -60,4 +60,14 @@ public class Cannon extends Unit {
 	public String getSymbol() {
 		return "C";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		else if (obj instanceof Cannon)
+			return super.equals(obj); 
+		else
+			return false;
+	}
 }
