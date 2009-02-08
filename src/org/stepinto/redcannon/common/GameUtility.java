@@ -19,4 +19,16 @@ public class GameUtility {
 		else
 			return pos.getY() >= ChessGame.BOARD_HEIGHT/2;
 	}
+	
+	public static int getOpponent(int player) {
+		switch (player) {
+		case ChessGame.BLACK:
+			return ChessGame.RED;
+		case ChessGame.RED:
+			return ChessGame.BLACK;
+		default:
+			assert(false);
+			return 0;
+		}
+	}
 }
