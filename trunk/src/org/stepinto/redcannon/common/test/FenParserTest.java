@@ -10,6 +10,9 @@ public class FenParserTest extends TestCase {
 		int expectedPlayer = ChessGame.RED;
 		GameState state = FenParser.parseString(FEN_STRING);
 		
+		// new org.stepinto.redcannon.ui.BoardWindow(state.getBoard()).run();
+		// new org.stepinto.redcannon.ui.BoardWindow(expectedBoard).run();
+		
 		assertEquals(expectedBoard, state.getBoard());
 		assertEquals(expectedPlayer, state.getPlayer());
 	}

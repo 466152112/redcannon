@@ -69,9 +69,9 @@ public class GameUtility {
 			int x = X[i];
 			int y = Y[i];
 			int unit = UNIT[i];
-			board.setColorAt(x, y, ChessGame.BLACK);
+			board.setColorAt(x, y, ChessGame.RED);
 			board.setUnitAt(x, y, unit);
-			board.setColorAt(x, ChessGame.BOARD_HEIGHT - y - 1, ChessGame.RED);
+			board.setColorAt(x, ChessGame.BOARD_HEIGHT - y - 1, ChessGame.BLACK);
 			board.setUnitAt(x, ChessGame.BOARD_HEIGHT - y - 1, unit);
 		}
 		return board;
