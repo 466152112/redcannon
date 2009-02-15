@@ -27,18 +27,14 @@ public class BoardWindow extends Thread {
 	private static final RGB BLACK_UNIT_TEXT_COLOR = new RGB(0, 0, 0);
 	private static final RGB UNIT_BACKGROUND_COLOR = new RGB(255, 237, 162);
 
-	// private static final String UNIT_TEXT_FONT_NAME = "Tahoma";
-	// private static final int UNIT_TEXT_FONT_SIZE = 2000;
-	// private static final int UNIT_TEXT_FONT_STYLE = SWT.NORMAL;
-
 	// state
 	private static final int WAIT_FOR_SELECT_UNIT = 0;
 	private static final int WAIT_FOR_SELECT_TARGET = 1;
 
 	private BoardImage board;
 	private int state;
-	private Unit selectedUnit;
 	private Position targetPos;
+	private Position sourcePos;
 
 	private Font unitTextFont;
 
@@ -57,12 +53,11 @@ public class BoardWindow extends Thread {
 	}
 
 	public UserMove waitForUserMove() {
-		while (targetPos == null || selectedUnit == null
-				|| !selectedUnit.isAlive())
+		while (targetPos == null || sourcePos == null)
 			sleep(100);
-		UserMove ret = new UserMove(selectedUnit, targetPos);
+		UserMove ret = new UserMove(sourcePos, targetPos);
 		state = WAIT_FOR_SELECT_UNIT;
-		selectedUnit = null;
+		sourcePos = null;
 		return ret;
 	}
 
@@ -90,7 +85,7 @@ public class BoardWindow extends Thread {
 		display = new Display();
 
 		// unitTextFont = new Font(display, UNIT_TEXT_FONT_NAME,
-		//		UNIT_TEXT_FONT_SIZE, UNIT_TEXT_FONT_STYLE);
+		// UNIT_TEXT_FONT_SIZE, UNIT_TEXT_FONT_STYLE);
 
 		shell = new Shell();
 		shell.setSize(SWT.MIN, SWT.MIN);
@@ -108,34 +103,28 @@ public class BoardWindow extends Thread {
 				if (e.button == 1) {
 					if (state == WAIT_FOR_SELECT_UNIT) {
 						Position pos = getClickedPosition(e.x, e.y);
-						if (!board.isEmptyAt(pos)
-								&& board.getUnitAt(pos).isAlive()) {
-							selectedUnit = board.getUnitAt(pos);
+						if (!board.isEmptyAt(pos)) {
+							sourcePos = pos;
 							state = WAIT_FOR_SELECT_TARGET;
 						}
 						redraw();
 					} else if (state == WAIT_FOR_SELECT_TARGET) {
-						if (selectedUnit.isAlive()) {
-							Position pos = getClickedPosition(e.x, e.y);
-							if (!board.isEmptyAt(pos)) {
-								if (board.getUnitAt(pos).getColor() == selectedUnit
-										.getColor()) {
-									selectedUnit = board.getUnitAt(pos);
-									state = WAIT_FOR_SELECT_TARGET;
-								} else {
-									targetPos = pos;
-									state = WAIT_FOR_SELECT_UNIT;
-								}
+						Position pos = getClickedPosition(e.x, e.y);
+						if (!board.isEmptyAt(pos)) {
+							if (board.getColorAt(pos) == board
+									.getColorAt(sourcePos)) {
+								sourcePos = pos;
+								state = WAIT_FOR_SELECT_TARGET;
 							} else {
 								targetPos = pos;
 								state = WAIT_FOR_SELECT_UNIT;
 							}
-						} else {
-							selectedUnit = null;
-							state = WAIT_FOR_SELECT_UNIT;
 						}
-						redraw();
+					} else {
+						sourcePos = null;
+						state = WAIT_FOR_SELECT_UNIT;
 					}
+					redraw();
 				}
 			}
 
@@ -201,40 +190,44 @@ public class BoardWindow extends Thread {
 				PALACE_MAX_Y_TOP);
 
 		// draw stones
-		for (Unit unit : board.getUnits())
-			drawUnit(gc, unit);
+		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
+			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
+				if (!board.isEmptyAt(x, y))
+					drawUnit(gc, new Position(x, y), board.getUnitAt(x, y));
 	}
 
-	private void drawUnit(GC gc, Unit unit) {
-		if (unit.isAlive()) {
-			RGB textColor = unit.getColor() == ChessGame.BLACK ? BLACK_UNIT_TEXT_COLOR : RED_UNIT_TEXT_COLOR;
-			int centerX = unit.getPosition().getX() * GRID_SIZE + MARGIN;
-			int centerY = unit.getPosition().getY() * GRID_SIZE + MARGIN;
-			
-			Color fgColor = new Color(gc.getDevice(), textColor);
-			Color bgColor = new Color(gc.getDevice(), UNIT_BACKGROUND_COLOR); 
-			
-			gc.setLineWidth(1);
-			
-			if (unit == selectedUnit) {
-				gc.setForeground(bgColor);
-				gc.setBackground(fgColor);
-			}
-			else {
-				gc.setForeground(fgColor);
-				gc.setBackground(bgColor);
-			}
-			gc.fillOval(centerX - UNIT_RADIUS, centerY - UNIT_RADIUS, 2 * UNIT_RADIUS, 2 * UNIT_RADIUS);
-			gc.drawOval(centerX - UNIT_RADIUS, centerY - UNIT_RADIUS, 2 * UNIT_RADIUS, 2 * UNIT_RADIUS);
-			gc.drawOval(centerX - UNIT_RADIUS + 2, centerY - UNIT_RADIUS + 2, 2 * UNIT_RADIUS - 4, 2 * UNIT_RADIUS - 4);
-			
-			// FIXME: not to hard code this
-			String text = unit.getChineseSymbol();
-			Point textSize = gc.stringExtent(text);
-			int textWidth = textSize.x;
-			int textHeight = textSize.y;
-			gc.drawText(text, centerX - textWidth/2, centerY - textHeight/2);
+	private void drawUnit(GC gc, Position pos, int unit) {
+		RGB textColor = board.getColorAt(pos) == ChessGame.BLACK ? BLACK_UNIT_TEXT_COLOR
+				: RED_UNIT_TEXT_COLOR;
+		int centerX = pos.getX() * GRID_SIZE + MARGIN;
+		int centerY = pos.getY() * GRID_SIZE + MARGIN;
+
+		Color fgColor = new Color(gc.getDevice(), textColor);
+		Color bgColor = new Color(gc.getDevice(), UNIT_BACKGROUND_COLOR);
+
+		gc.setLineWidth(1);
+
+		if (pos.equals(sourcePos)) {
+			gc.setForeground(bgColor);
+			gc.setBackground(fgColor);
+		} else {
+			gc.setForeground(fgColor);
+			gc.setBackground(bgColor);
 		}
+		gc.fillOval(centerX - UNIT_RADIUS, centerY - UNIT_RADIUS,
+				2 * UNIT_RADIUS, 2 * UNIT_RADIUS);
+		gc.drawOval(centerX - UNIT_RADIUS, centerY - UNIT_RADIUS,
+				2 * UNIT_RADIUS, 2 * UNIT_RADIUS);
+		gc.drawOval(centerX - UNIT_RADIUS + 2, centerY - UNIT_RADIUS + 2,
+				2 * UNIT_RADIUS - 4, 2 * UNIT_RADIUS - 4);
+
+		// FIXME: not to hard code this
+		String text = GameUtility.getUnitChineseSymbol(board.getColorAt(pos),
+				unit);
+		Point textSize = gc.stringExtent(text);
+		int textWidth = textSize.x;
+		int textHeight = textSize.y;
+		gc.drawText(text, centerX - textWidth / 2, centerY - textHeight / 2);
 	}
 
 	private void drawLine(GC gc, int x1, int y1, int x2, int y2) {

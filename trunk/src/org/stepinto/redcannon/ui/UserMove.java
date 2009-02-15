@@ -3,17 +3,17 @@ package org.stepinto.redcannon.ui;
 import org.stepinto.redcannon.common.*;
 
 public class UserMove {
-	private Unit unit;
+	private Position source;
 	private Position target;
 	
-	public UserMove(Unit unit, Position target) {
+	public UserMove(Position source, Position target) {
 		super();
-		this.unit = unit;
+		this.source = source;
 		this.target = target;
 	}
 	
-	public Unit getUnit() {
-		return unit;
+	public Position getSouce() {
+		return source;
 	}
 
 	public Position getTarget() {
@@ -21,6 +21,6 @@ public class UserMove {
 	}
 	
 	public String toString() {
-		return unit.getPosition() + " -> " + target;
+		return source + " -> " + target;
 	}
 }

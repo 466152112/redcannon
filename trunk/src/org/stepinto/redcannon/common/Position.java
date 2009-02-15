@@ -2,8 +2,8 @@ package org.stepinto.redcannon.common;
 
 public class Position {
 	public Position(int x, int y) {
-		this.x = x;
-		this.y = y;
+		this.x = (short)x;
+		this.y = (short)y;
 	}
 
 	public int getX() {
@@ -44,7 +44,15 @@ public class Position {
 	public String toString() {
 		return "(" + x + ", " + y + " " + ")";
 	}
+	
+	public int toInteger() {
+		return (x << 4) | y;
+	}
+	
+	public static int toInteger(int x, int y) {
+		return (x << 4) | y;
+	}
 
-	private int x;
-	private int y;
+	private short x;
+	private short y;
 }

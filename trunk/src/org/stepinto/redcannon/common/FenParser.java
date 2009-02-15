@@ -49,8 +49,6 @@ public class FenParser {
 
 	private static BoardImage buildBoard(String str)
 			throws InvalidFenFormatException {
-		final int BLACK = ChessGame.BLACK;
-		final int RED = ChessGame.RED;
 		BoardImage board = new BoardImage();
 		int x = 0;
 		int y = 0;
@@ -61,59 +59,73 @@ public class FenParser {
 			char ch = str.charAt(i);
 			switch (ch) {
 			case 'r':
-				board.addUnit(new Rook(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.ROOK);
 				x++;
 				break;
 			case 'n':
-				board.addUnit(new Horse(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.HORSE);
 				x++;
 				break;
 			case 'b':
-				board.addUnit(new Elephant(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.ELEPHANT);
 				x++;
 				break;
 			case 'a':
-				board.addUnit(new Advisor(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.ADVISOR);
 				x++;
 				break;
 			case 'k':
-				board.addUnit(new King(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.KING);
 				x++;
 				break;
 			case 'c':
-				board.addUnit(new Cannon(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.CANNON);
 				x++;
 				break;
 			case 'p':
-				board.addUnit(new Pawn(BLACK, x, y));
+				board.setColorAt(x, y, ChessGame.BLACK);
+				board.setUnitAt(x, y, ChessGame.PAWN);
 				x++;
 				break;
 			case 'R':
-				board.addUnit(new Rook(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.ROOK);
 				x++;
 				break;
 			case 'N':
-				board.addUnit(new Horse(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.HORSE);
 				x++;
 				break;
 			case 'B':
-				board.addUnit(new Elephant(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.ELEPHANT);
 				x++;
 				break;
 			case 'A':
-				board.addUnit(new Advisor(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.ADVISOR);
 				x++;
 				break;
 			case 'K':
-				board.addUnit(new King(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.KING);
 				x++;
 				break;
 			case 'C':
-				board.addUnit(new Cannon(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.CANNON);
 				x++;
 				break;
 			case 'P':
-				board.addUnit(new Pawn(RED, x, y));
+				board.setColorAt(x, y, ChessGame.RED);
+				board.setUnitAt(x, y, ChessGame.PAWN);
 				x++;
 				break;
 			case '/':
