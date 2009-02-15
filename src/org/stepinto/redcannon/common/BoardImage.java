@@ -58,6 +58,21 @@ public class BoardImage {
 		else
 			return false;
 	}
+	
+	public byte[] compress() {
+		byte[] result = new byte[45];
+		int i = 0;
+		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
+			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y += 2) {
+				result[i/2] = (byte) ((compressAt(x,y)<<4) | compressAt(x,y+1));
+				i++;
+			}
+		return result;
+	}
+	
+	private byte compressAt(int x, int y) {
+		return (byte) (((getColorAt(x, y) == ChessGame.BLACK) ? 0x0 : 0x80) | getUnitAt(x, y));
+	}
 
 	private byte units[];
 	private byte colors[];
