@@ -55,29 +55,49 @@ public class GameUtility {
 	}
 
 	public static BoardImage createStartBoard() {
-		final int RED = ChessGame.RED;
-		final int BLACK = ChessGame.BLACK;
-
+		final int X[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 1, 7, 0, 2, 4, 6, 8};
+		final int Y[] = {9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 7, 6, 6, 6, 6, 6};
+		final int UNIT[] = {ChessGame.ROOK, ChessGame.HORSE, ChessGame.ELEPHANT,
+				ChessGame.ADVISOR, ChessGame.KING, ChessGame.ADVISOR,
+				ChessGame.ELEPHANT, ChessGame.HORSE, ChessGame.ROOK,
+				ChessGame.CANNON, ChessGame.CANNON, ChessGame.PAWN,
+				ChessGame.PAWN, ChessGame.PAWN, ChessGame.PAWN, ChessGame.PAWN};
+		assert(X.length == Y.length && UNIT.length == Y.length);
+		
 		BoardImage board = new BoardImage();
-		Unit[] redUnits = { new Rook(RED, 0, 9), new Horse(RED, 1, 9),
-				new Elephant(RED, 2, 9), new Advisor(RED, 3, 9),
-				new King(RED, 4, 9), new Advisor(RED, 5, 9),
-				new Elephant(RED, 6, 9), new Horse(RED, 7, 9),
-				new Rook(RED, 8, 9), new Cannon(RED, 1, 7),
-				new Cannon(RED, 7, 7), new Pawn(RED, 0, 6),
-				new Pawn(RED, 2, 6), new Pawn(RED, 4, 6), new Pawn(RED, 6, 6),
-				new Pawn(RED, 8, 6) };
-		Unit[] blackUnits = { new Rook(BLACK, 0, 0), new Horse(BLACK, 1, 0),
-				new Elephant(BLACK, 2, 0), new Advisor(BLACK, 3, 0),
-				new King(BLACK, 4, 0), new Advisor(BLACK, 5, 0),
-				new Elephant(BLACK, 6, 0), new Horse(BLACK, 7, 0),
-				new Rook(BLACK, 8, 0), new Cannon(BLACK, 1, 2),
-				new Cannon(BLACK, 7, 2), new Pawn(BLACK, 0, 3),
-				new Pawn(BLACK, 2, 3), new Pawn(BLACK, 4, 3),
-				new Pawn(BLACK, 6, 3), new Pawn(BLACK, 8, 3) };
-
-		board.batchAddUnits(redUnits);
-		board.batchAddUnits(blackUnits);
+		for (int i = 0; i < X.length; i++) {
+			int x = X[i];
+			int y = Y[i];
+			int unit = UNIT[i];
+			board.setColorAt(x, y, ChessGame.BLACK);
+			board.setUnitAt(x, y, unit);
+			board.setColorAt(x, ChessGame.BOARD_HEIGHT - y - 1, ChessGame.RED);
+			board.setUnitAt(x, ChessGame.BOARD_HEIGHT - y - 1, unit);
+		}
 		return board;
+	}
+
+	public static String getUnitChineseSymbol(int color, int unit) {
+		final int BLACK = ChessGame.BLACK;
+		
+		switch (unit) {
+		case ChessGame.ADVISOR:
+			return color == BLACK ? "士" : "仕";
+		case ChessGame.CANNON:
+			return color == BLACK ? "砲" : "炮";
+		case ChessGame.ELEPHANT:
+			return color == BLACK ? "象" : "相";
+		case ChessGame.HORSE:
+			return "马";
+		case ChessGame.KING:
+			return color == BLACK ? "将" : "帅";
+		case ChessGame.PAWN:
+			return color == BLACK ? "卒" : "兵";
+		case ChessGame.ROOK:
+			return "车";
+		default:
+			assert(false);
+			return null;
+		}
 	}
 }

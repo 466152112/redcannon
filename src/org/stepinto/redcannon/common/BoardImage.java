@@ -1,90 +1,64 @@
 package org.stepinto.redcannon.common;
 
-import java.util.*;
-
 public class BoardImage {
 	public BoardImage() {
-		units = new Unit[ChessGame.BOARD_WIDTH][ChessGame.BOARD_HEIGHT];
+		units = new byte[256];
+		colors = new byte[256];
 	}
 
 	public boolean isEmptyAt(Position pos) {
-		return isEmptyAt(pos.getX(), pos.getY());
+		return colors[pos.toInteger()] == ChessGame.EMPTY;
 	}
 
 	public boolean isEmptyAt(int x, int y) {
-		return units[x][y] == null;
+		return colors[Position.toInteger(x, y)] == ChessGame.EMPTY;
 	}
 
-	public Unit getUnitAt(Position pos) {
-		return getUnitAt(pos.getX(), pos.getY());
+	public int getUnitAt(Position pos) {
+		return (int)units[pos.toInteger()];
 	}
 
-	public Unit getUnitAt(int x, int y) {
-		return units[x][y];
+	public int getUnitAt(int x, int y) {
+		return (int)units[Position.toInteger(x, y)];
 	}
 
 	public int getColorAt(Position pos) {
-		return getColorAt(pos.getX(), pos.getY());
+		return (int)colors[pos.toInteger()];
 	}
 
 	public int getColorAt(int x, int y) {
-		Unit unit = getUnitAt(x, y);
-		if (unit == null)
-			return ChessGame.EMPTY;
-		else
-			return unit.getColor();
+		return (int)colors[Position.toInteger(x, y)];
 	}
 
-	public void addUnit(Unit unit) {
-		int x = unit.getPosition().getX();
-		int y = unit.getPosition().getY();
-		units[x][y] = unit;
+	public void setColorAt(Position pos, int color) {
+		colors[pos.toInteger()] = (byte)color;
 	}
 	
-	public void batchAddUnits(Unit[] list) {
-		for (Unit u : list)
-			addUnit(u);
+	public void setColorAt(int x, int y, int color) {
+		colors[Position.toInteger(x, y)] = (byte)color;
 	}
 	
-	public Unit[] getUnits() {
-		Unit[] ret = new Unit[ChessGame.MAX_UNITS];
-		int count = 0;
-		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
-			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
-				if (units[x][y] != null)
-					ret[count++] = units[x][y];
-		return Arrays.copyOf(ret, count);
+	public void setUnitAt(Position pos, int unit) {
+		units[pos.toInteger()] = (byte)unit;
 	}
-
-	public Unit[] getUnitOf(int player) {
-		Unit[] ret = new Unit[ChessGame.MAX_UNITS_EACH_PLAYER];
-		int count = 0;
-		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
-			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
-				if (units[x][y] != null && units[x][y].getColor() == player)
-					ret[count++] = units[x][y];
-		return Arrays.copyOf(ret, count);
-	}
+	
+	public void setUnitAt(int x, int y, int unit) {
+		units[Position.toInteger(x, y)] = (byte)unit;
+	}	
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof BoardImage) {
 			BoardImage board = (BoardImage)obj;
-			for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
-				for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++) {
-					if (units[x][y] == null) {
-						if (board.units[x][y] != null)
-							return false;
-					}
-					else {
-						if (!units[x][y].equals(board.units[x][y]))
-							return false;
-					}
-				}
+			for (int i = 0; i < colors.length; i++) {
+				if (colors[i] != board.colors[i] || units[i] != board.units[i])
+					return false;
+			}
 			return true;
 		}
 		else
 			return false;
 	}
 
-	private Unit units[][];
+	private byte units[];
+	private byte colors[];
 }
