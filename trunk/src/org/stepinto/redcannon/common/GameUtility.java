@@ -100,4 +100,42 @@ public class GameUtility {
 			return null;
 		}
 	}
+	
+	public static String getUnitSymbol(int color, int unit) {
+		final int BLACK = ChessGame.BLACK;
+		
+		switch (unit) {
+		case ChessGame.ADVISOR:
+			return color == BLACK ? "a" : "A";
+		case ChessGame.CANNON:
+			return color == BLACK ? "c" : "C";
+		case ChessGame.ELEPHANT:
+			return color == BLACK ? "e" : "E";
+		case ChessGame.HORSE:
+			return color == BLACK ? "h" : "H";
+		case ChessGame.KING:
+			return color == BLACK ? "k" : "K";
+		case ChessGame.PAWN:
+			return color == BLACK ? "p" : "P";
+		case ChessGame.ROOK:
+			return color == BLACK ? "r" : "R";
+		default:
+			assert(false);
+			return null;
+		}
+	}
+
+	public static String getColorName(int player) {
+		switch (player) {
+		case ChessGame.EMPTY:
+			return "empty";
+		case ChessGame.BLACK:
+			return "black";
+		case ChessGame.RED:
+			return "red";
+		default:
+			assert(false);
+			return null;
+		}
+	}
 }
