@@ -1,5 +1,7 @@
 package org.stepinto.redcannon.common;
 
+import java.io.PrintStream;
+
 public class BoardImage {
 	public BoardImage() {
 		units = new byte[256];
@@ -46,6 +48,48 @@ public class BoardImage {
 		units[Position.toInteger(x, y)] = (byte)unit;
 	}	
 	
+	// return killed unit
+	// if nothing killed, return ChessGame.EMPTY
+	public int performMove(Move move) {
+		Position source = move.getSource();
+		Position target = move.getTarget();
+		assert(!isEmptyAt(source));
+		assert(getColorAt(target) != getColorAt(source));
+		
+		int sourceColor = getColorAt(source);
+		int sourceUnit = getUnitAt(source);
+		int targetColor = getColorAt(target);
+		int targetUnit = getUnitAt(target);
+		
+		setColorAt(source, ChessGame.EMPTY);
+		setUnitAt(source, ChessGame.EMPTY);
+		setColorAt(target, sourceColor);
+		setUnitAt(target, sourceUnit);
+		
+		return (targetColor == ChessGame.EMPTY) ? ChessGame.EMPTY : targetUnit;
+	}
+	
+	public void unperformMove(Move move, int killedUnit) {
+		Position source = move.getSource();
+		Position target = move.getTarget();
+		assert(isEmptyAt(source));
+		assert(!isEmptyAt(target));
+		
+		int sourceColor = getColorAt(target);
+		int sourceUnit = getUnitAt(target);
+		
+		setColorAt(source, sourceColor);
+		setUnitAt(source, sourceUnit);
+		if (killedUnit == ChessGame.EMPTY) {
+			setColorAt(target, ChessGame.EMPTY);
+			setUnitAt(target, ChessGame.EMPTY);
+		}
+		else {
+			setColorAt(target, GameUtility.getOpponent(sourceColor));
+			setUnitAt(target, killedUnit);
+		}
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof BoardImage) {
 			BoardImage board = (BoardImage)obj;
@@ -57,6 +101,29 @@ public class BoardImage {
 		}
 		else
 			return false;
+	}
+	
+	public void dump(PrintStream out) {
+		out.print(" ");
+		for (int x = 0;x  < ChessGame.BOARD_WIDTH; x++) {
+			out.print(" ");
+			out.print(x);
+		}
+		out.println();
+		
+		for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++) {
+			out.print(y);
+			
+			for (int x = 0; x < ChessGame.BOARD_HEIGHT; x++) {
+				out.print(" ");
+				
+				if (isEmptyAt(x, y))
+					out.println(".");
+				else
+					out.print(GameUtility.getUnitSymbol(getColorAt(x, y), getUnitAt(x, y)));
+			}
+			out.println();
+		}
 	}
 	
 	public byte[] compress() {
