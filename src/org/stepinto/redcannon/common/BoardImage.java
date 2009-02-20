@@ -118,7 +118,7 @@ public class BoardImage {
 				out.print(" ");
 				
 				if (isEmptyAt(x, y))
-					out.println(".");
+					out.print(".");
 				else
 					out.print(GameUtility.getUnitSymbol(getColorAt(x, y), getUnitAt(x, y)));
 			}
@@ -131,7 +131,7 @@ public class BoardImage {
 		int i = 0;
 		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
 			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y += 2) {
-				result[i/2] = (byte) ((compressAt(x,y)<<4) | compressAt(x,y+1));
+				result[i] = (byte) ((compressAt(x,y)<<4) | compressAt(x,y+1));
 				i++;
 			}
 		return result;

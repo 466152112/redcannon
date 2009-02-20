@@ -20,7 +20,7 @@ public class RuleEngine {
 			int ny = y + dy;
 			
 			if (Position.isValid(nx, ny) && board.getColorAt(nx, ny) != player && GameUtility.isInPalace(player, nx, ny)) {
-				legalMoves[count] = new Position(x, y);
+				legalMoves[count] = new Position(nx, ny);
 				count++;
 			}
 		}
@@ -114,7 +114,7 @@ public class RuleEngine {
 			int nx = x + HORSE_DX[i];
 			int ny = y + HORSE_DY[i];
 			
-			if (board.isEmptyAt(bx, by) && Position.isValid(nx, ny) && board.getColorAt(nx, ny) != player) {
+			if (Position.isValid(nx, ny) && board.isEmptyAt(bx, by) && board.getColorAt(nx, ny) != player) {
 				legalMoves[count] = new Position(nx, ny);
 				count++;
 			}
@@ -171,7 +171,7 @@ public class RuleEngine {
 			
 			for (int i = 0; i < DX.length; i++) {
 				Position adj = pos.move(DX[i], DY[i]);
-				if (board.getColorAt(adj) != player) {
+				if (adj.isValid() && board.getColorAt(adj) != player) {
 					legalMoves[count] = adj;
 					count++;
 				}
@@ -181,7 +181,7 @@ public class RuleEngine {
 		}
 		else {
 			Position possibleMove = pos.move(0, attackDir);
-			if (possibleMove.isValid()) {
+			if (possibleMove.isValid() && board.getColorAt(possibleMove) != player) {
 				Position[] legalMoves = new Position[1];
 				legalMoves[0] = possibleMove;
 				return legalMoves;
@@ -221,7 +221,7 @@ public class RuleEngine {
 		return Arrays.copyOf(legalMoves, count);
 	}
 	
-	public Position[] getLegalMoves(BoardImage board, int x, int y) {
+	public static Position[] getLegalMoves(BoardImage board, int x, int y) {
 		int unit = board.getUnitAt(x, y);
 		switch (unit) {
 		case ChessGame.ADVISOR:
@@ -236,6 +236,8 @@ public class RuleEngine {
 			return getPawnLegalMoves(board, x, y);
 		case ChessGame.ROOK:
 			return getRookLegalMoves(board, x, y);
+		case ChessGame.ELEPHANT:
+			return getElephantLegalMoves(board, x, y);
 		default:
 			assert(false);
 			return null;

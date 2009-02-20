@@ -17,4 +17,8 @@ public class Move {
 	public Position getTarget() {
 		return target;
 	}
+	
+	public String toString() {
+		return source + " --> " + target;
+	}
 }

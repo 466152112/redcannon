@@ -8,7 +8,7 @@ public class SearchEngine {
 	private Selector[] selectors;
 	private Validator[] validators;
 	
-	public void addEvvaluator(Evaluator e) {
+	public void addEvaluator(Evaluator e) {
 		evaluators = Arrays.copyOf(evaluators, evaluators.length+1);
 		evaluators[evaluators.length-1] = e;
 	}
@@ -23,10 +23,11 @@ public class SearchEngine {
 		validators[validators.length-1] = v;
 	}
 	
+	public static final int MAX_DEPTH = 15;
+	
 	private BoardImage board;
 	private StateHash hash;
 	private int player;
-	private int maxDepth;
 	private int depth;
 	private Statistics stat;
 	
@@ -40,6 +41,7 @@ public class SearchEngine {
 		int stateId = stat.getNumberOfStates();
 		byte[] boardCompressed = board.compress();
 		stat.increaseStates();
+		stat.updateMaxDepth(depth);
 		
 		if (debug)
 			printEnterStateMessage(stateId, board, player, depth, alpha, beta);
@@ -49,10 +51,10 @@ public class SearchEngine {
 		if (hashedState != null) {
 			// check if there's a identical state we've searched before
 			// and it reaches deeper or equal than this
-			if (hashedState.getHeight() >= maxDepth - depth && hashedState.getBeta() >= beta) {
+			if (hashedState.getHeight() >= MAX_DEPTH - depth && hashedState.getBeta() >= beta) {
 				if (debug)
 					printIdenticalStateFoundMessage(hashedState);
-				stat.increaseHashedStates();
+				stat.increaseHashHits();
 				return new SearchResult(hashedState.getBestMove(), hashedState.getAlpha());
 			}
 		}
@@ -60,7 +62,7 @@ public class SearchEngine {
 		// call each evaluator
 		for (Evaluator e : evaluators) {
 			EvaluateResult result = e.evaluate(board, player, depth, debug);
-			if (result.isSearchTerminated()) {
+			if (result != null) {
 				if (debug)
 					printEvaluateMessage(result, e);
 				stat.increaseEvaluatedStates();
@@ -79,6 +81,9 @@ public class SearchEngine {
 			}
 		});
 		
+		if (debug)
+			printCandidateMessage(candi);
+		
 		// search
 		Move bestMove = null;
 		Map<Candidate, Integer> candiScore = (debug ? new HashMap<Candidate, Integer>() : null);
@@ -94,7 +99,7 @@ public class SearchEngine {
 			depth++;
 			
 			// search recursively
-			SearchResult tmpResult = doSearch(-alpha, -beta);
+			SearchResult tmpResult = doSearch(-beta, -alpha);
 			
 			// undo move
 			board.unperformMove(move, killedUnit);
@@ -105,26 +110,29 @@ public class SearchEngine {
 			if (debug)
 				candiScore.put(c, -tmpResult.getScore());
 			
-			// beta-cuts & update alpha
-			if (-tmpResult.getScore() > beta) {
-				stat.increaseBetaCuts();
-				break;
-			}
+			// update alpha & beta-cuts
 			if (-tmpResult.getScore() > alpha) {
 				alpha = -tmpResult.getScore();
 				bestMove = move;
 			}
+			if (-tmpResult.getScore() > beta) {
+				stat.increaseBetaCuts();
+				break;
+			}
 		}
 		
 		// update hash
-		hash.put(boardCompressed, player, new StateInfo(alpha, beta, bestMove, maxDepth - depth));
+		hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, MAX_DEPTH - depth));
 		
-		printLeaveStateMessage(stateId, bestMove, candi, candiScore);
+		// System.out.println("alpha = " + alpha);
+		if (debug)
+			printLeaveStateMessage(stateId, bestMove, candi, candiScore);
 		return new SearchResult(bestMove, alpha);
 	} 
 	
 	private void printIdenticalStateFoundMessage(StateInfo hashedState) {
 		System.out.println("Identical state found in hash.");
+		System.out.println("State-id: " + hashedState.getStateId());
 		System.out.println("Best-move: " + hashedState.getBestMove());
 		System.out.println("Alpha: " + hashedState.getAlpha());
 		System.out.println("Beta: " + hashedState.getBeta());
@@ -150,8 +158,13 @@ public class SearchEngine {
 		System.out.println(">> Leaving state #" + stateId + ".");
 		for (Candidate c : candi) {
 			System.out.print(bestMove == c.getMove() ? "* " : "  ");
-			System.out.println(c.getMove() + "   P: " + c.getPriority() + "  S: " + candiScore.get(c));
+			System.out.println(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason() + "  S: " + candiScore.get(c));
 		}
+	}
+	
+	private void printCandidateMessage(List<Candidate> candi) {
+		for (Candidate c : candi)
+			System.out.println(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason());
 	}
 	
 	public SearchEngine(BoardImage board, int player) {
@@ -159,9 +172,21 @@ public class SearchEngine {
 		this.player = player;
 		
 		hash = new StateHash();
+		evaluators = new Evaluator[0];
+		selectors = new Selector[0];
+		validators = new Validator[0];
+		stat = new Statistics();
+	}
+	
+	public SearchEngine(GameState state) {
+		this(state.getBoard(), state.getPlayer());
 	}
 	
 	public SearchResult search() {
 		return doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 }

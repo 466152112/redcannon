@@ -3,12 +3,17 @@ package org.stepinto.redcannon.ai;
 import org.stepinto.redcannon.common.Move;
 
 public class StateInfo {
-	public StateInfo(int alpha, int beta, Move bestMove, int height) {
+	public StateInfo(int stateId, int alpha, int beta, Move bestMove, int height) {
 		super();
+		this.stateId = stateId;
 		this.alpha = alpha;
 		this.beta = beta;
 		this.bestMove = bestMove;
 		this.height = height;
+	}
+	
+	public int getStateId() {
+		return stateId;
 	}
 
 	public int getAlpha() {
@@ -27,6 +32,7 @@ public class StateInfo {
 		return bestMove;
 	}
 
+	private int stateId;
 	private int alpha;
 	private int beta;
 	private int height;

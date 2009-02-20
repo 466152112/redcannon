@@ -5,7 +5,7 @@ import java.io.*;
 public class FenParser {
 	public static GameState parseString(String str)
 			throws InvalidFenFormatException {
-		String parts[] = str.split("\\ +");
+		String parts[] = str.replaceAll(";.*", "").split("\\ +");
 		if (parts.length != 6)
 			throw new InvalidFenFormatException(
 					"More or less parts in fen string");

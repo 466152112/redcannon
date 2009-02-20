@@ -25,7 +25,7 @@ public class StateHash {
 		private int player;
 	}
 	
-	private Map<State, StateInfo> hash;
+	private Map<State, StateInfo> hash = new HashMap<State, StateInfo>();
 	
 	public StateInfo lookUp(byte[] boardCompressed, int player) {
 		return hash.get(new State(boardCompressed, player));
