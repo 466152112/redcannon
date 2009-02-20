@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!-- 
+	build.xml for redcannon, by stepinto <charlescpp@gmail.com> 
+-->
+
+<project default="compile" basedir=".">
+	<property name="base.dir" location="." />
+	<property name="src.dir" location="src" />
+	<property name="lib.dir" location="lib" />
+	<property name="build.dir" location="bin" />
+
+	<path id="classpath">
+		<pathelement path="${build.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar/" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="off">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+</project>
