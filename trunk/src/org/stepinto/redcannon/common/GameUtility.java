@@ -19,9 +19,9 @@ public class GameUtility {
 
 	public static boolean isBeyondRiver(int player, int y) {
 		if (getAttackDirection(player) == 1)
-			return y < ChessGame.BOARD_HEIGHT / 2;
-		else
 			return y >= ChessGame.BOARD_HEIGHT / 2;
+		else
+			return y < ChessGame.BOARD_HEIGHT / 2;
 	}
 
 	public static int getOpponent(int player) {

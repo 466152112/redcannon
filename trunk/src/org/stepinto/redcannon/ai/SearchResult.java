@@ -1,5 +1,6 @@
 package org.stepinto.redcannon.ai;
 
+import java.io.*;
 import org.stepinto.redcannon.common.Move;
 
 public class SearchResult {
@@ -18,5 +19,10 @@ public class SearchResult {
 
 	public int getScore() {
 		return score;
+	}
+	
+	public void dump(PrintStream out) {
+		out.println("Score: " + score);
+		out.println("Best-move: " + bestMove);
 	}
 }

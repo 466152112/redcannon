@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Statistics {
 	private int states;
-	private int hashedStates;
+	private int hashHits;
 	private int evaluatedStates;
 	private int betaCuts;
 	private int maxDepth;
@@ -18,8 +18,8 @@ public class Statistics {
 		states++;
 	}
 	
-	public void increaseHashedStates() {
-		hashedStates++;
+	public void increaseHashHits() {
+		hashHits++;
 	}
 	
 	public void increaseEvaluatedStates() {
@@ -30,7 +30,7 @@ public class Statistics {
 		betaCuts++;
 	}
 	
-	public void udpateMaxDepth(int depth) {
+	public void updateMaxDepth(int depth) {
 		if (depth > maxDepth)
 			maxDepth = depth;
 	}
@@ -52,9 +52,9 @@ public class Statistics {
 	
 	public void dump(PrintStream out) {
 		out.println("States: " + states);
-		out.println("Hashed-states: " + hashedStates);
+		out.println("Hash-hits: " + hashHits);
 		out.println("Evaluated-states: " + evaluatedStates);
 		out.println("Beta-cuts: " + betaCuts);
-		out.println("Average-degree: " + getAverageDegree()); 
+		out.printf("Average-degree: %.2f\n", getAverageDegree());
 	}
 }
