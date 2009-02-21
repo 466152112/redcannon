@@ -39,10 +39,10 @@ public class SearchLogger {
 	public void leaveState() {
 		int stateId = stateIdStack.pop();
 		StateLogInfo log = states.remove(stateId);
-		out.println("  <state id=" + stateId + ">");
+		out.println("  <state id=\"" + stateId + "\">");
 		out.println("    <message>" + new String(Base64.encodeBase64(log.getMessage().getBytes())) + "</message>");
 		for (int child : log.getChildStates())
-			out.println("    <child-state id=" + child + " />");
+			out.println("    <child-state id=\"" + child + "\" />");
 		out.println("  </state>");
 	}
 }

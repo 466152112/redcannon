@@ -6,13 +6,17 @@ import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.ai.log.*;
 
 public class EndgameTest {
-	public void run(File file) throws InvalidFenFormatException, IOException {
+	public void run(File file, boolean debug) throws InvalidFenFormatException, IOException {
 		GameState state = FenParser.parseFile(file);
 		SearchEngine engine = new SearchEngine(state);
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
 		
-		// engine.setLogger(new SearchLogger(System.out));
+		if (debug) {
+			File logFile = new File(file.getAbsolutePath() + ".log");
+			SearchLogger logger = new SearchLogger(new FileOutputStream(logFile));
+			engine.setLogger(logger);
+		}
 		
 		System.out.println(file.getAbsolutePath());
 		state.getBoard().dump(System.out);
@@ -20,19 +24,31 @@ public class EndgameTest {
 		SearchResult result = engine.search();
 		result.dump(System.out);
 		engine.getStatistics().dump(System.out);
-		
-		System.exit(0);
 	}
 	
 	public static void main(String args[]) throws Exception {
-		File dir = new File("test/endgames");
-		FilenameFilter filter = new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith("fen");
-			}};
+		boolean debug = false;
+		File file = new File("test/endgames");
 		
-		for (File file : dir.listFiles(filter))
-			new EndgameTest().run(file);
+		// parse arg
+		for (String arg : args)
+			if (arg.equals("--debug"))
+				debug = true;
+			else
+				file = new File(arg);
+				
+		// process
+		if (file.isDirectory()) {
+			FilenameFilter filter = new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith("fen");
+				}};
+				for (File f : file.listFiles(filter))
+					new EndgameTest().run(f, debug);
+		}
+		else {
+			new EndgameTest().run(file, debug);
+		}
 	}
 }
