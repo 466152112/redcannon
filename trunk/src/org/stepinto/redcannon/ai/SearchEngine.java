@@ -1,7 +1,9 @@
 package org.stepinto.redcannon.ai;
 
+import java.io.*;
 import java.util.*;
 import org.stepinto.redcannon.common.*;
+import org.stepinto.redcannon.ai.log.*;
 
 public class SearchEngine {
 	private Evaluator[] evaluators;
@@ -23,7 +25,7 @@ public class SearchEngine {
 		validators[validators.length-1] = v;
 	}
 	
-	public static final int MAX_DEPTH = 15;
+	public static final int MAX_DEPTH = 10;
 	
 	private BoardImage board;
 	private StateHash hash;
@@ -31,7 +33,7 @@ public class SearchEngine {
 	private int depth;
 	private Statistics stat;
 	
-	private boolean debug;
+	private SearchLogger logger;
 	
 	public Statistics getStatistics() {
 		return stat;
@@ -43,8 +45,7 @@ public class SearchEngine {
 		stat.increaseStates();
 		stat.updateMaxDepth(depth);
 		
-		if (debug)
-			printEnterStateMessage(stateId, board, player, depth, alpha, beta);
+		printEnterStateMessage(stateId, board, player, depth, alpha, beta);
 		
 		// look up hash for identical state
 		StateInfo hashedState = hash.lookUp(boardCompressed, player);
@@ -52,8 +53,7 @@ public class SearchEngine {
 			// check if there's a identical state we've searched before
 			// and it reaches deeper or equal than this
 			if (hashedState.getHeight() >= MAX_DEPTH - depth && hashedState.getBeta() >= beta) {
-				if (debug)
-					printIdenticalStateFoundMessage(hashedState);
+				printIdenticalStateFoundMessage(hashedState);
 				stat.increaseHashHits();
 				return new SearchResult(hashedState.getBestMove(), hashedState.getAlpha());
 			}
@@ -61,10 +61,9 @@ public class SearchEngine {
 		
 		// call each evaluator
 		for (Evaluator e : evaluators) {
-			EvaluateResult result = e.evaluate(board, player, depth, debug);
+			EvaluateResult result = e.evaluate(board, player, depth, logger);
 			if (result != null) {
-				if (debug)
-					printEvaluateMessage(result, e);
+				printEvaluateMessage(result, e);
 				stat.increaseEvaluatedStates();
 				return new SearchResult(null, result.getScore());
 			}
@@ -73,7 +72,7 @@ public class SearchEngine {
 		// get candidates
 		List<Candidate> candi = new ArrayList<Candidate>();
 		for (Selector s : selectors)
-			s.select(candi, board, player, depth, debug);
+			s.select(candi, board, player, depth, logger);
 		Collections.sort(candi, new Comparator<Candidate>() {
 			@Override
 			public int compare(Candidate a, Candidate b) {
@@ -81,12 +80,9 @@ public class SearchEngine {
 			}
 		});
 		
-		if (debug)
-			printCandidateMessage(candi);
-		
 		// search
 		Move bestMove = null;
-		Map<Candidate, Integer> candiScore = (debug ? new HashMap<Candidate, Integer>() : null);
+		Map<Candidate, Integer> candiScore = (logger == null ? null : new HashMap<Candidate, Integer>());
 			
 		for (Candidate c : candi) {
 			Move move = c.getMove();
@@ -107,7 +103,7 @@ public class SearchEngine {
 			depth--;
 			
 			// update candi-score
-			if (debug)
+			if (logger != null)
 				candiScore.put(c, -tmpResult.getScore());
 			
 			// update alpha & beta-cuts
@@ -125,47 +121,64 @@ public class SearchEngine {
 		hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, MAX_DEPTH - depth));
 		
 		// System.out.println("alpha = " + alpha);
-		if (debug)
-			printLeaveStateMessage(stateId, bestMove, candi, candiScore);
+		if (logger != null)
+			printLeaveStateMessage(bestMove, candi, candiScore);
 		return new SearchResult(bestMove, alpha);
 	} 
 	
 	private void printIdenticalStateFoundMessage(StateInfo hashedState) {
-		System.out.println("Identical state found in hash.");
-		System.out.println("State-id: " + hashedState.getStateId());
-		System.out.println("Best-move: " + hashedState.getBestMove());
-		System.out.println("Alpha: " + hashedState.getAlpha());
-		System.out.println("Beta: " + hashedState.getBeta());
-		System.out.println("Height: " + hashedState.getHeight());
-	}
-	
-	private void printEvaluateMessage(EvaluateResult result, Evaluator evaluator) {
-		System.out.println("Evaluated by " + evaluator.getClass().getSimpleName() + ".");
-		System.out.println("Score: " + result.getScore());
-		System.out.println("Reason: " + result.getReason());
-	}
-	
-	private void printEnterStateMessage(int stateId, BoardImage board, int player, int depth, int alpha, int beta) {
-		System.out.println(">> Entering state #" + stateId + ".");
-		board.dump(System.out);
-		System.out.println("Player: " + GameUtility.getColorName(player));
-		System.out.println("Depth: " + depth);
-		System.out.println("Alpha: " + alpha);
-		System.out.println("Beta: " + beta);
-	}
-	
-	private void printLeaveStateMessage(int stateId, Move bestMove, List<Candidate> candi, Map<Candidate, Integer> candiScore) {
-		System.out.println(">> Leaving state #" + stateId + ".");
-		for (Candidate c : candi) {
-			System.out.print(bestMove == c.getMove() ? "* " : "  ");
-			System.out.println(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason() + "  S: " + candiScore.get(c));
+		if (logger != null) {
+			logger.printMessage("Identical state found in hash.\n");
+			logger.printMessage("State-id: " + hashedState.getStateId() + "\n");
+			logger.printMessage("Best-move: " + hashedState.getBestMove() + "\n");
+			logger.printMessage("Alpha: " + hashedState.getAlpha() + "\n");
+			logger.printMessage("Beta: " + hashedState.getBeta() + "\n");
+			logger.printMessage("Height: " + hashedState.getHeight() + "\n");
+			
+			logger.leaveState();
 		}
 	}
 	
-	private void printCandidateMessage(List<Candidate> candi) {
+	private void printEvaluateMessage(EvaluateResult result, Evaluator evaluator) {
+		if (logger != null) {
+			logger.printMessage("Evaluated by " + evaluator.getClass().getSimpleName() + ".\n");
+			logger.printMessage("Score: " + result.getScore() + "\n");
+			logger.printMessage("Reason: " + result.getReason() + "\n");
+			
+			logger.leaveState();
+		}
+	}
+	
+	private void printEnterStateMessage(int stateId, BoardImage board, int player, int depth, int alpha, int beta) {
+		if (logger != null) {
+			logger.enterState(stateId);
+			
+			ByteArrayOutputStream boardStream = new ByteArrayOutputStream();
+			board.dump(new PrintStream(boardStream));
+			
+			logger.printMessage(">> Entering state #" + stateId + ".\n");
+			logger.printMessage(boardStream.toString() + "\n");
+			logger.printMessage("Player: " + GameUtility.getColorName(player) + "\n");
+			logger.printMessage("Depth: " + depth + "\n");
+			logger.printMessage("Alpha: " + alpha + "\n");
+			logger.printMessage("Beta: " + beta + "\n");
+		}
+	}
+	
+	private void printLeaveStateMessage(Move bestMove, List<Candidate> candi, Map<Candidate, Integer> candiScore) {
+		if (logger != null) {
+			for (Candidate c : candi) {
+				logger.printMessage(bestMove == c.getMove() ? "* " : "  ");
+				logger.printMessage(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason() + "  S: " + candiScore.get(c) + "\n");
+			}
+			logger.leaveState();
+		}
+	}
+	
+	/*private void printCandidateMessage(List<Candidate> candi) {
 		for (Candidate c : candi)
 			System.out.println(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason());
-	}
+	}*/
 	
 	public SearchEngine(BoardImage board, int player) {
 		this.board = board;
@@ -186,7 +199,7 @@ public class SearchEngine {
 		return doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
 	}
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
+	public void setLogger(SearchLogger logger) {
+		this.logger = logger;
 	}
 }

@@ -1,8 +1,9 @@
-package org.stepinto.redcannon.common.test;
+package org.stepinto.redcannon.ai.test;
 
 import java.io.*;
 import org.stepinto.redcannon.common.*;
 import org.stepinto.redcannon.ai.*;
+import org.stepinto.redcannon.ai.log.*;
 
 public class EndgameTest {
 	public void run(File file) throws InvalidFenFormatException, IOException {
@@ -11,7 +12,7 @@ public class EndgameTest {
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
 		
-		// engine.setDebug(true);
+		// engine.setLogger(new SearchLogger(System.out));
 		
 		System.out.println(file.getAbsolutePath());
 		state.getBoard().dump(System.out);
@@ -20,7 +21,7 @@ public class EndgameTest {
 		result.dump(System.out);
 		engine.getStatistics().dump(System.out);
 		
-		// System.exit(0);
+		System.exit(0);
 	}
 	
 	public static void main(String args[]) throws Exception {
