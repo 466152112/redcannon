@@ -2,12 +2,13 @@ package org.stepinto.redcannon.ai;
 
 import java.util.*;
 import org.stepinto.redcannon.common.*;
+import org.stepinto.redcannon.ai.log.*;
 
 public class NaiveSelector implements Selector {
 
 	@Override
 	public void select(List<Candidate> candi, BoardImage board, int player,
-			int depth, boolean debug) {
+			int depth, SearchLogger logger) {
 		int opponent = GameUtility.getOpponent(player);
 		
 		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)

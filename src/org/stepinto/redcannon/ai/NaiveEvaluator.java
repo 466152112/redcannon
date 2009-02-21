@@ -1,13 +1,14 @@
 package org.stepinto.redcannon.ai;
 
 import org.stepinto.redcannon.common.*;
+import org.stepinto.redcannon.ai.log.*;
 
 public class NaiveEvaluator implements Evaluator {
 	private final static int EVALUATE_THRESHOLD = 20;
 	
 	@Override
 	public EvaluateResult evaluate(BoardImage board, int player, int depth,
-			boolean debug) {
+			SearchLogger logger) {
 		int score = UnitScoreUtility.getUnitScoreDifference(board, player);
 		
 		if (Math.abs(score) > EVALUATE_THRESHOLD) {
