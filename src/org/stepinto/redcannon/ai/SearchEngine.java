@@ -196,7 +196,12 @@ public class SearchEngine {
 	}
 	
 	public SearchResult search() {
-		return doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
+		if (logger != null)
+			logger.beginSearch();
+		SearchResult result = doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
+		if (logger != null)
+			logger.endSearch();
+		return result;
 	}
 
 	public void setLogger(SearchLogger logger) {

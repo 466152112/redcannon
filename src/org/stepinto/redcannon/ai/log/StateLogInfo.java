@@ -1,5 +1,6 @@
 package org.stepinto.redcannon.ai.log;
 
+import java.io.*;
 import java.util.*;
 
 public class StateLogInfo {
@@ -34,6 +35,15 @@ public class StateLogInfo {
 	
 	public void addChildState(int childStateId) {
 		childStates.add(childStateId);
+	}
+	
+	public void dump(PrintStream out) {
+		out.println("State-id: " + stateId);
+		out.println(message);
+		out.print("Child-states:");
+		for (int i : childStates)
+			out.print(" " + i);
+		out.println();
 	}
 
 	private int stateId;
