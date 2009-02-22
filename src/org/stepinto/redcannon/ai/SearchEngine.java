@@ -25,7 +25,7 @@ public class SearchEngine {
 		validators[validators.length-1] = v;
 	}
 	
-	public static final int MAX_DEPTH = 10;
+	public static final int MAX_DEPTH = 20;
 	
 	private BoardImage board;
 	private StateHash hash;
@@ -111,16 +111,18 @@ public class SearchEngine {
 				alpha = -tmpResult.getScore();
 				bestMove = move;
 			}
-			if (-tmpResult.getScore() > beta) {
+			if (-tmpResult.getScore() >= beta) {
 				stat.increaseBetaCuts();
 				break;
 			}
 		}
 		
-		// update hash
-		hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, MAX_DEPTH - depth));
+		if (stateId == 32061) System.out.println("alpha = " + alpha);
 		
-		// System.out.println("alpha = " + alpha);
+		// update hash
+		if (bestMove != null)
+			hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, MAX_DEPTH - depth));
+		
 		if (logger != null)
 			printLeaveStateMessage(bestMove, candi, candiScore);
 		return new SearchResult(bestMove, alpha);
@@ -168,7 +170,7 @@ public class SearchEngine {
 	private void printLeaveStateMessage(Move bestMove, List<Candidate> candi, Map<Candidate, Integer> candiScore) {
 		if (logger != null) {
 			for (Candidate c : candi) {
-				logger.printMessage(bestMove == c.getMove() ? "* " : "  ");
+				logger.printMessage((bestMove != null && bestMove.equals(c.getMove())) ? "* " : "  ");
 				logger.printMessage(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason() + "  S: " + candiScore.get(c) + "\n");
 			}
 			logger.leaveState();

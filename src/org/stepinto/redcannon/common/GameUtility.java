@@ -43,7 +43,7 @@ public class GameUtility {
 		if (PALACE_MIN_X <= x && x <= PALACE_MAX_X) {
 			if (GameUtility.getAttackDirection(player) == 1) {
 				final int PALACE_MIN_Y = 0;
-				final int PALACE_MAX_Y = 3;
+				final int PALACE_MAX_Y = 2;
 				return PALACE_MIN_Y <= y && y <= PALACE_MAX_Y;
 			} else {
 				final int PALACE_MIN_Y = 7;
