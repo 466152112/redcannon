@@ -1,6 +1,7 @@
 package org.stepinto.redcannon.ai.test;
 
 import java.io.*;
+import java.util.*;
 import org.stepinto.redcannon.common.*;
 import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.ai.log.*;
@@ -44,8 +45,11 @@ public class EndgameTest {
 				public boolean accept(File dir, String name) {
 					return name.endsWith("fen");
 				}};
-				for (File f : file.listFiles(filter))
-					new EndgameTest().run(f, debug);
+				
+			File[] files = file.listFiles(filter);
+			Arrays.sort(files);
+			for (File f : files)
+				new EndgameTest().run(f, debug);
 		}
 		else {
 			new EndgameTest().run(file, debug);
