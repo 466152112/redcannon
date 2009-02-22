@@ -1,3 +1,5 @@
+#!/bin/bash
+
 uname | grep -iq cygwin
 if [ $? -eq 0 ]
 then
