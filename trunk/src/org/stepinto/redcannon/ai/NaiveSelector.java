@@ -29,7 +29,7 @@ public class NaiveSelector implements Selector {
 						
 						if (board.getColorAt(target) == opponent) {
 							reason = "killing move.";
-							priority = 20;
+							priority = 10 + UnitScoreUtility.getUnitScore(board.getUnitAt(target));
 						}
 						else {
 							reason = "normal move.";
