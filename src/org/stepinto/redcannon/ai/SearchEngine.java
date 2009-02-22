@@ -117,8 +117,6 @@ public class SearchEngine {
 			}
 		}
 		
-		if (stateId == 32061) System.out.println("alpha = " + alpha);
-		
 		// update hash
 		if (bestMove != null)
 			hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, MAX_DEPTH - depth));
