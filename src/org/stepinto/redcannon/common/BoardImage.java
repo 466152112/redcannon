@@ -140,6 +140,16 @@ public class BoardImage {
 	private byte compressAt(int x, int y) {
 		return (byte) (((getColorAt(x, y) == ChessGame.BLACK) ? 0x0 : 0x80) | getUnitAt(x, y));
 	}
+	
+	// deep-copy
+	public BoardImage duplicate() {
+		BoardImage board = new BoardImage();
+		for (int i = 0; i < units.length; i++)
+			board.units[i] = units[i];
+		for (int i = 0; i < colors.length; i++)
+			board.colors[i] = colors[i];
+		return board;
+	}
 
 	private byte units[];
 	private byte colors[];
