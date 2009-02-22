@@ -138,4 +138,21 @@ public class GameUtility {
 			return null;
 		}
 	}
+	
+	public static boolean hasPlayerWon(BoardImage board, int player) {
+		boolean ourKing = false;
+		boolean oppKing = false;
+		
+		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
+			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
+				if (board.getUnitAt(x, y) == ChessGame.KING) {
+					if (board.getColorAt(x, y) == player)
+						ourKing = true;
+					else
+						oppKing = true;
+				}
+		
+		assert (ourKing || oppKing);
+		return !oppKing;
+	}
 }

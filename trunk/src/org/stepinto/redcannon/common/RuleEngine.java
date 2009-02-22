@@ -1,6 +1,7 @@
 package org.stepinto.redcannon.common;
 
-import java.util.Arrays;
+import java.util.*;
+import org.apache.commons.lang.*;
 
 public class RuleEngine {
 	// advisor
@@ -87,7 +88,7 @@ public class RuleEngine {
 			int ny = y + DY[i];
 			int bx = x + BX[i];
 			int by = y + BY[i];
-			if (Position.isValid(nx, ny) && GameUtility.isBeyondRiver(player, ny) && board.getColorAt(nx, ny) != player && board.isEmptyAt(bx, by)) {
+			if (Position.isValid(nx, ny) && !GameUtility.isBeyondRiver(player, ny) && board.getColorAt(nx, ny) != player && board.isEmptyAt(bx, by)) {
 				legalMoves[count] = new Position(nx, ny);
 				count++;
 			}
@@ -242,5 +243,14 @@ public class RuleEngine {
 			assert(false);
 			return null;
 		}
+	}
+	
+	public static Position[] getLegalMoves(BoardImage board, Position pos) {
+		return getLegalMoves(board, pos.getX(), pos.getY());
+	}
+	
+	public static boolean isLegalMove(BoardImage board, Move move) {
+		Position legalTargets[] = getLegalMoves(board, move.getSource());
+		return ArrayUtils.contains(legalTargets, move.getTarget());
 	}
 }

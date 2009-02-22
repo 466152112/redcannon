@@ -52,12 +52,13 @@ public class BoardWindow extends Thread {
 		this.state = WAIT_FOR_SELECT_UNIT;
 	}
 
-	public UserMove waitForUserMove() {
+	public Move waitForUserMove() {
 		while (targetPos == null || sourcePos == null)
 			sleep(100);
-		UserMove ret = new UserMove(sourcePos, targetPos);
+		Move ret = new Move(sourcePos, targetPos);
 		state = WAIT_FOR_SELECT_UNIT;
 		sourcePos = null;
+		targetPos = null;
 		return ret;
 	}
 
@@ -70,7 +71,7 @@ public class BoardWindow extends Thread {
 
 	private void cleanUp() {
 		canvas.dispose();
-		unitTextFont.dispose();
+		// unitTextFont.dispose();
 		shell.dispose();
 		display.dispose();
 	}
@@ -110,7 +111,7 @@ public class BoardWindow extends Thread {
 						redraw();
 					} else if (state == WAIT_FOR_SELECT_TARGET) {
 						Position pos = getClickedPosition(e.x, e.y);
-						if (!board.isEmptyAt(pos)) {
+						// if (!board.isEmptyAt(pos)) {
 							if (board.getColorAt(pos) == board
 									.getColorAt(sourcePos)) {
 								sourcePos = pos;
@@ -119,7 +120,7 @@ public class BoardWindow extends Thread {
 								targetPos = pos;
 								state = WAIT_FOR_SELECT_UNIT;
 							}
-						}
+						// }
 					} else {
 						sourcePos = null;
 						state = WAIT_FOR_SELECT_UNIT;
@@ -152,7 +153,12 @@ public class BoardWindow extends Thread {
 	}
 
 	public void redraw() {
-		canvas.redraw();
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				canvas.redraw();
+			}
+		});
 	}
 
 	private void paintBoard(GC gc) {
