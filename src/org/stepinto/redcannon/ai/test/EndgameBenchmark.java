@@ -78,7 +78,10 @@ public class EndgameBenchmark {
 			public boolean accept(File dir, String name) {
 				return name.endsWith("fen");
 			}};
-		for (File file : dir.listFiles(filter)) {
+		File files[] = dir.listFiles(filter);
+		Arrays.sort(files);
+		
+		for (File file : files) {
 			if (verbose)
 				System.out.print("Processing " + file.getPath() + "...");
 			
