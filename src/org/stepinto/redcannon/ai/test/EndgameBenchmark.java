@@ -57,7 +57,6 @@ public class EndgameBenchmark {
 	public static void main(String args[]) throws Exception {
 		int timeLimit = 30;
 		File dir = new File("test/endgames");
-		boolean verbose = false;
 		
 		// parse args
 		for (int i = 0; i < args.length; i++) {
@@ -65,8 +64,6 @@ public class EndgameBenchmark {
 				i++;
 				timeLimit = Integer.parseInt(args[i]);
 			}
-			else if (args[i].equals("--verbose"))
-				verbose = true;
 			else
 				dir = new File(args[i]);
 		}
@@ -82,8 +79,7 @@ public class EndgameBenchmark {
 		Arrays.sort(files);
 		
 		for (File file : files) {
-			if (verbose)
-				System.out.print("Processing " + file.getPath() + "...");
+			System.out.print(file.getPath() + "\t");
 			
 			WorkerThread thread = new WorkerThread(file);			
 			thread.start();
@@ -95,8 +91,7 @@ public class EndgameBenchmark {
 			else
 				result.put(file, thread.getResult());
 			
-			if (verbose)
-				System.out.println(" " + result.get(file).split("\t")[0]);
+			System.out.println(" " + result.get(file));
 		}
 	}
 }
