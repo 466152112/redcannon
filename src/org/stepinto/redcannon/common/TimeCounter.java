@@ -21,6 +21,6 @@ public class TimeCounter {
 	
 	public String getTimeString() {
 		long time = getTimeMillis();
-		return time/1000 + "." + time/10%100 + "ms";
+		return time/1000 + "." + time/10%100 + "s";
 	}
 }
