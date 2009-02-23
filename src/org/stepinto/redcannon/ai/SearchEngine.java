@@ -25,7 +25,7 @@ public class SearchEngine {
 		validators[validators.length-1] = v;
 	}
 	
-	public static final int MAX_DEPTH = 20;
+	public static final int MAX_DEPTH = 23;
 	
 	private BoardImage board;
 	private StateHash hash;
