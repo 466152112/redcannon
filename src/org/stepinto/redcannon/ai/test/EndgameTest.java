@@ -19,7 +19,7 @@ public class EndgameTest {
 			engine.setLogger(logger);
 		}
 		
-		System.out.println(file.getAbsolutePath());
+		System.out.println(file.getPath());
 		state.getBoard().dump(System.out);
 		
 		SearchResult result = engine.search();
