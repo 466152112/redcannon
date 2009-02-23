@@ -80,7 +80,7 @@ public class EndgameBenchmark {
 			}};
 		for (File file : dir.listFiles(filter)) {
 			if (verbose)
-				System.out.print("Processing file.getAbsolutePath()...");
+				System.out.print("Processing " + file.getPath() + "...");
 			
 			WorkerThread thread = new WorkerThread(file);			
 			thread.start();
