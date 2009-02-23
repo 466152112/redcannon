@@ -56,7 +56,7 @@ public class EndgameBenchmark {
 	
 	public static void main(String args[]) throws Exception {
 		int timeLimit = 30;
-		File dir = null;
+		File dir = new File("test/endgames");
 		boolean verbose = false;
 		
 		// parse args
