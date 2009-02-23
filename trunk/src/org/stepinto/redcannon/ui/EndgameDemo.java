@@ -60,7 +60,7 @@ public class EndgameDemo {
 			window.redraw();
 			
 			if (GameUtility.hasPlayerWon(board, aiPlayer)) {
-				System.out.println("Human has won!");
+				System.out.println("AI has won!");
 				return;
 			}
 		}
