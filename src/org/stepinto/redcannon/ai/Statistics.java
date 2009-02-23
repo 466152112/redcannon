@@ -9,6 +9,7 @@ public class Statistics {
 	private int evaluatedStates;
 	private int betaCuts;
 	private int maxDepth;
+	private int hashMisses;
 	
 	public int getNumberOfStates() {
 		return states;
@@ -53,8 +54,13 @@ public class Statistics {
 	public void dump(PrintStream out) {
 		out.println("States: " + states);
 		out.println("Hash-hits: " + hashHits);
+		out.println("Hash-misses: " + hashMisses);
 		out.println("Evaluated-states: " + evaluatedStates);
 		out.println("Beta-cuts: " + betaCuts);
 		out.printf("Average-degree: %.2f\n", getAverageDegree());
+	}
+
+	public void increaseHashMisses() {
+		hashMisses++;
 	}
 }
