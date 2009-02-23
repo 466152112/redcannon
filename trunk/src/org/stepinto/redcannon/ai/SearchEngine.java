@@ -57,6 +57,8 @@ public class SearchEngine {
 				stat.increaseHashHits();
 				return new SearchResult(hashedState.getBestMove(), hashedState.getAlpha());
 			}
+			else
+				stat.increaseHashMisses();
 		}
 		
 		// call each evaluator
