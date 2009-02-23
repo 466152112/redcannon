@@ -3,6 +3,14 @@ package org.stepinto.redcannon.common;
 public class TimeCounter {
 	private long startTime;
 	
+	public TimeCounter() {
+	}
+	
+	public TimeCounter(boolean startNow) {
+		if (startNow)
+			start();
+	}
+	
 	public void start() {
 		startTime = System.currentTimeMillis();
 	}
