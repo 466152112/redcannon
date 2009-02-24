@@ -34,4 +34,8 @@ public class StateHash {
 	public void put(byte[] boardCompressed, int player, StateInfo info) {
 		hash.put(new State(boardCompressed, player), info);
 	}
+
+	public void putAll(StateHash sh) {
+		hash.putAll(sh.hash);
+	}
 }

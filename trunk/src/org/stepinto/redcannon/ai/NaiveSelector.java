@@ -16,11 +16,6 @@ public class NaiveSelector implements Selector {
 				if (board.getColorAt(x, y) == player) {
 					Position[] targets = RuleEngine.getLegalMoves(board, x, y);
 					for (Position target : targets) {
-//						if (board.getColorAt(target) == player) {
-//							board.dump(System.out);
-//							System.out.println(GameUtility.getColorName(player));
-//							System.out.println(new Move(new Position(x,y), target));
-//						}
 						assert(board.getColorAt(target) != player);
 						
 						Move move = new Move(new Position(x, y), target);

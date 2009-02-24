@@ -177,11 +177,6 @@ public class SearchEngine {
 		}
 	}
 	
-	/*private void printCandidateMessage(List<Candidate> candi) {
-		for (Candidate c : candi)
-			System.out.println(c.getMove() + "   P: " + c.getPriority() + "  R: " + c.getReason());
-	}*/
-	
 	public SearchEngine(BoardImage board, int player) {
 		this.board = board;
 		this.player = player;

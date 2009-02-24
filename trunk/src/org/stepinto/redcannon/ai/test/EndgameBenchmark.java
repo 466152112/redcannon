@@ -2,15 +2,8 @@ package org.stepinto.redcannon.ai.test;
 
 import java.io.*;
 import java.util.*;
-
-import org.stepinto.redcannon.ai.NaiveEvaluator;
-import org.stepinto.redcannon.ai.NaiveSelector;
-import org.stepinto.redcannon.ai.SearchEngine;
-import org.stepinto.redcannon.ai.SearchResult;
-import org.stepinto.redcannon.common.FenParser;
-import org.stepinto.redcannon.common.GameState;
-import org.stepinto.redcannon.common.GameUtility;
-import org.stepinto.redcannon.common.TimeCounter;
+import org.stepinto.redcannon.ai.*;
+import org.stepinto.redcannon.common.*;
 
 public class EndgameBenchmark {
 	private static class WorkerThread extends Thread {
