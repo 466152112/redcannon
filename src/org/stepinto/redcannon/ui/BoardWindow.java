@@ -1,7 +1,5 @@
 package org.stepinto.redcannon.ui;
 
-import javax.xml.soap.Text;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
