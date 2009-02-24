@@ -25,4 +25,8 @@ public class Candidate {
 	public String getReason() {
 		return reason;
 	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
 }
