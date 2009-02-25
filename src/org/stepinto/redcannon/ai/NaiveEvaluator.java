@@ -39,7 +39,7 @@ public class NaiveEvaluator implements Evaluator {
 	
 	@Override
 	public EvaluateResult evaluate(BoardImage board, int player, int depth,
-			SearchLogger logger) {
+			int depthLimit, int timeLeft, SearchLogger logger) {
 		int score = UnitScoreUtility.getUnitScoreDifference(board, player); 
 		
 		if (Math.abs(score) > EVALUATE_THRESHOLD) {
@@ -50,8 +50,12 @@ public class NaiveEvaluator implements Evaluator {
 			String reason = "no attack unit exists.";
 			return new EvaluateResult(0, reason);
 		}
-		else if (depth >= SearchEngine.MAX_DEPTH) {
+		else if (depth >= depthLimit) {
 			String reason = "reaches depth limit.";
+			return new EvaluateResult(score, reason);
+		}
+		else if (timeLeft < 0) {
+			String reason = "time's up";
 			return new EvaluateResult(score, reason);
 		}
 		else
