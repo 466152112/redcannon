@@ -6,6 +6,9 @@ import org.stepinto.redcannon.common.*;
 import org.stepinto.redcannon.ai.log.*;
 
 public class SearchEngine {
+	public static final int DEFAULT_DEPTH_LIMIT = 23;
+	public static final int DEFAULT_TIME_LIMIT = Integer.MAX_VALUE;
+	
 	private Evaluator[] evaluators;
 	private Selector[] selectors;
 	private Validator[] validators;
@@ -25,7 +28,30 @@ public class SearchEngine {
 		validators[validators.length-1] = v;
 	}
 	
-	public static final int MAX_DEPTH = 23;
+	public void setDepthLimit(int depthLimit) {
+		this.depthLimit = depthLimit;
+	}
+
+	public void setTimeLimit(int timeLimit) {
+		this.timeLimit = timeLimit;
+	}
+	
+	public int getDepthLimit() {
+		return depthLimit;
+	}
+	
+	public int getTimeLimit() {
+		return timeLimit;
+	}
+	
+	public StateHash getStateHash() {
+		return hash;
+	}
+
+	private int depthLimit;
+	private int timeLimit;  // unit: ms
+	
+	private long startTime;
 	
 	private BoardImage board;
 	private StateHash hash;
@@ -42,6 +68,7 @@ public class SearchEngine {
 	private SearchResult doSearch(int alpha, int beta) {
 		int stateId = stat.getNumberOfStates();
 		byte[] boardCompressed = board.compress();
+		int timeLeft = timeLimit - (int)(System.currentTimeMillis() - startTime);
 		stat.increaseStates();
 		stat.updateMaxDepth(depth);
 		
@@ -52,7 +79,7 @@ public class SearchEngine {
 		if (hashedState != null) {
 			// check if there's a identical state we've searched before
 			// and it reaches deeper or equal than this
-			if (hashedState.getHeight() >= MAX_DEPTH - depth && hashedState.getBeta() >= beta) {
+			if (hashedState.getHeight() >= depthLimit - depth && hashedState.getBeta() >= beta) {
 				printIdenticalStateFoundMessage(hashedState);
 				stat.increaseHashHits();
 				return new SearchResult(hashedState.getBestMove(), hashedState.getAlpha());
@@ -63,7 +90,7 @@ public class SearchEngine {
 		
 		// call each evaluator
 		for (Evaluator e : evaluators) {
-			EvaluateResult result = e.evaluate(board, player, depth, logger);
+			EvaluateResult result = e.evaluate(board, player, depth, depthLimit, timeLeft, logger);
 			if (result != null) {
 				printEvaluateMessage(result, e);
 				stat.increaseEvaluatedStates();
@@ -74,7 +101,7 @@ public class SearchEngine {
 		// get candidates
 		List<Candidate> candi = new ArrayList<Candidate>();
 		for (Selector s : selectors)
-			s.select(candi, board, player, depth, logger);
+			s.select(candi, board, player, depth, depthLimit, hash, logger);
 		Collections.sort(candi, new Comparator<Candidate>() {
 			@Override
 			public int compare(Candidate a, Candidate b) {
@@ -121,7 +148,7 @@ public class SearchEngine {
 		
 		// update hash
 		if (bestMove != null)
-			hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, MAX_DEPTH - depth));
+			hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, depthLimit - depth));
 		
 		if (logger != null)
 			printLeaveStateMessage(bestMove, candi, candiScore);
@@ -186,6 +213,9 @@ public class SearchEngine {
 		selectors = new Selector[0];
 		validators = new Validator[0];
 		stat = new Statistics();
+		
+		depthLimit = DEFAULT_DEPTH_LIMIT;
+		timeLimit = DEFAULT_TIME_LIMIT;
 	}
 	
 	public SearchEngine(GameState state) {
@@ -195,7 +225,10 @@ public class SearchEngine {
 	public SearchResult search() {
 		if (logger != null)
 			logger.beginSearch();
+		
+		startTime = System.currentTimeMillis();
 		SearchResult result = doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
+		
 		if (logger != null)
 			logger.endSearch();
 		return result;

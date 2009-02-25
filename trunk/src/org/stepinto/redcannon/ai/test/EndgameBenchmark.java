@@ -6,6 +6,9 @@ import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.common.*;
 
 public class EndgameBenchmark {
+	private static int timeLimit = 30;
+	private static int depthLimit = SearchEngine.DEFAULT_DEPTH_LIMIT;
+	
 	private static class WorkerThread extends Thread {
 		private File file;
 		private String result;
@@ -34,6 +37,9 @@ public class EndgameBenchmark {
 				engine.addEvaluator(new NaiveEvaluator());
 				engine.addSelector(new NaiveSelector());
 				
+				engine.setTimeLimit(timeLimit * 1000);
+				engine.setDepthLimit(depthLimit);
+				
 				TimeCounter counter = new TimeCounter(true);
 				counter.start();
 				SearchResult sr = engine.search();
@@ -48,7 +54,6 @@ public class EndgameBenchmark {
 	}
 	
 	public static void main(String args[]) throws Exception {
-		int timeLimit = 30;
 		File dir = new File("test/endgames");
 		
 		// parse args
@@ -56,6 +61,10 @@ public class EndgameBenchmark {
 			if (args[i].equals("--time-limit")) {
 				i++;
 				timeLimit = Integer.parseInt(args[i]);
+			}
+			else if (args[i].equals("--depth-limit")) {
+				i++;
+				depthLimit = Integer.parseInt(args[i]); 
 			}
 			else
 				dir = new File(args[i]);
