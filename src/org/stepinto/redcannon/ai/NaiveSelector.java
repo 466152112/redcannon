@@ -26,7 +26,7 @@ public class NaiveSelector implements Selector {
 						
 						// if (board.getColorAt(target) == opponent) {
 						if (hashedState != null && hashedState.getBeta() >= -alpha) {
-							reason = "hashed move.";
+							reason = "historical heuristic move.";
 							priority = -hashedState.getAlpha() + 10;
 						}
 						else {
@@ -39,7 +39,6 @@ public class NaiveSelector implements Selector {
 								priority = 10;
 							}
 						}
-						
 						
 						board.unperformMove(move, killedUnit);
 						candi.add(new Candidate(move, priority, reason));

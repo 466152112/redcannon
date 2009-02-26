@@ -6,7 +6,7 @@ import java.util.*;
 public class StateHash {
 	private static long BLACK_MASK;
 	private static long RED_MASK;
-	private static final int INITIAL_HASH_CAPACITY = 64*1024*1024 - 1;
+	// private static final int INITIAL_HASH_CAPACITY = 64*1024*1024 - 1;
 	
 	static {
 		Random random = new Random();
@@ -14,7 +14,7 @@ public class StateHash {
 		RED_MASK = random.nextLong();
 	}
 
-	private Map<Long, StateInfo> hash = new HashMap<Long, StateInfo>(INITIAL_HASH_CAPACITY);
+	private Map<Long, StateInfo> hash = new HashMap<Long, StateInfo>();
 	
 	public StateInfo lookUp(BoardImage board, int player) {
 		long key = getHashKey(board, player);
