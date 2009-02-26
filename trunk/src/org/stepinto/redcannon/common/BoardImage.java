@@ -8,6 +8,37 @@ public class BoardImage {
 		colors = new byte[256];
 	}
 
+	public BoardImage(byte[] bytes) {
+		units = new byte[256];
+		colors = new byte[256];
+		
+		int i = 0;
+		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
+			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y += 2) {
+				byte k = bytes[i++];
+				depressAt(x, y+1, (byte)(0xf & k));
+				k = (byte)(k >> 4);
+				depressAt(x, y, k);
+			}
+		assert(i == bytes.length);
+	}
+	
+	public void depressAt(int x, int y, byte k) {
+		if (k != 0) {
+			if (((k >> 3) & 1) == 0)
+				setColorAt(x, y, ChessGame.BLACK);
+			else {
+
+				setColorAt(x, y, ChessGame.RED);
+			}
+			setUnitAt(x, y, k & 0x7);
+		}
+		else {
+			setColorAt(x, y, ChessGame.EMPTY);
+			setUnitAt(x, y, ChessGame.EMPTY);
+		}
+	}
+
 	public boolean isEmptyAt(Position pos) {
 		return colors[pos.toInteger()] == ChessGame.EMPTY;
 	}
@@ -138,7 +169,7 @@ public class BoardImage {
 	}
 	
 	private byte compressAt(int x, int y) {
-		return (byte) (((getColorAt(x, y) == ChessGame.BLACK) ? 0x0 : 0x80) | getUnitAt(x, y));
+		return (byte) (((getColorAt(x, y) == ChessGame.RED) ? 0x8 : 0x0) | getUnitAt(x, y));
 	}
 	
 	// deep-copy
