@@ -100,7 +100,7 @@ public class SearchEngine {
 		// get candidates
 		List<Candidate> candi = new ArrayList<Candidate>();
 		for (Selector s : selectors)
-			s.select(candi, board, player, depth, depthLimit, hash, logger);
+			s.select(candi, board, player, depth, alpha, beta, depthLimit, hash, logger);
 		Collections.sort(candi, new Comparator<Candidate>() {
 			@Override
 			public int compare(Candidate a, Candidate b) {
