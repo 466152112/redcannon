@@ -1,82 +1,123 @@
 package org.stepinto.redcannon.common;
 
-import java.io.PrintStream;
+import java.util.*;
+import java.io.*;
 
-public class BoardImage {
-	public BoardImage() {
-		units = new byte[256];
-		colors = new byte[256];
-	}
+import org.apache.commons.lang.ArrayUtils;
 
-	public BoardImage(byte[] bytes) {
-		units = new byte[256];
-		colors = new byte[256];
-		
-		int i = 0;
-		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
-			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y += 2) {
-				byte k = bytes[i++];
-				depressAt(x, y+1, (byte)(0xf & k));
-				k = (byte)(k >> 4);
-				depressAt(x, y, k);
-			}
-		assert(i == bytes.length);
+public class BoardImage { 
+	private static long zobristMasks[][];  // 256 * 16
+	
+	static {
+		// init zobrist-mask
+		zobristMasks = new long [256][16];
+		Random random = new Random();
+		for (int i = 0; i < 256; i++)
+			for (int j = 0; j < 16; j++)
+				zobristMasks[i][j] = random.nextLong();
 	}
 	
-	public void depressAt(int x, int y, byte k) {
-		if (k != 0) {
-			if (((k >> 3) & 1) == 0)
-				setColorAt(x, y, ChessGame.BLACK);
-			else {
-
-				setColorAt(x, y, ChessGame.RED);
-			}
-			setUnitAt(x, y, k & 0x7);
-		}
-		else {
-			setColorAt(x, y, ChessGame.EMPTY);
-			setUnitAt(x, y, ChessGame.EMPTY);
-		}
+	public BoardImage() {
+		units = new int[256];
+		zobrist = 0;
 	}
-
+	
+	private BoardImage(int units[], long zobrist) {
+		this.units = units;
+		this.zobrist = zobrist;
+	}
+	
 	public boolean isEmptyAt(Position pos) {
-		return colors[pos.toInteger()] == ChessGame.EMPTY;
+		return units[pos.toInteger()] == ChessGame.EMPTY;
 	}
 
 	public boolean isEmptyAt(int x, int y) {
-		return colors[Position.toInteger(x, y)] == ChessGame.EMPTY;
+		return units[Position.toInteger(x, y)] == ChessGame.EMPTY;
 	}
 
 	public int getUnitAt(Position pos) {
-		return (int)units[pos.toInteger()];
+		return units[pos.toInteger()] & 0x7;
 	}
 
 	public int getUnitAt(int x, int y) {
-		return (int)units[Position.toInteger(x, y)];
+		return units[Position.toInteger(x, y)] & 0x7;
 	}
 
 	public int getColorAt(Position pos) {
-		return (int)colors[pos.toInteger()];
+		int unit = units[pos.toInteger()];
+		if (unit == ChessGame.EMPTY)
+			return ChessGame.EMPTY;
+		else
+			return ((unit>>3) == 0) ? ChessGame.BLACK : ChessGame.RED; 
 	}
 
 	public int getColorAt(int x, int y) {
-		return (int)colors[Position.toInteger(x, y)];
+		int unit = units[Position.toInteger(x, y)];
+		if (unit == ChessGame.EMPTY)
+			return ChessGame.EMPTY;
+		else
+			return ((unit>>3) == 0) ? ChessGame.BLACK : ChessGame.RED;		
 	}
 
 	public void setColorAt(Position pos, int color) {
-		colors[pos.toInteger()] = (byte)color;
+		int oldValue = units[pos.toInteger()];
+		int newValue;
+		
+		switch (color) {
+		case ChessGame.EMPTY:
+			newValue = ChessGame.EMPTY;
+			break;
+		case ChessGame.BLACK:
+			newValue = (~0x8) & oldValue;
+			break;
+		case ChessGame.RED:
+			newValue = 0x8 | oldValue;
+			break;
+		default:
+			assert(false);
+			newValue = 0;
+		}
+		
+		units[pos.toInteger()] = newValue;
+		updateZobristCode(pos.toInteger(), oldValue, newValue);
 	}
-	
+
+
 	public void setColorAt(int x, int y, int color) {
-		colors[Position.toInteger(x, y)] = (byte)color;
+		int oldValue = units[Position.toInteger(x, y)];
+		int newValue;
+		
+		switch (color) {
+		case ChessGame.EMPTY:
+			newValue = ChessGame.EMPTY;
+			break;
+		case ChessGame.BLACK:
+			newValue = (~0x8) & oldValue;
+			break;
+		case ChessGame.RED:
+			newValue = 0x8 | oldValue;
+			break;
+		default:
+			assert(false);
+			newValue = 0;
+		}
+		
+		units[Position.toInteger(x, y)] = newValue;
+		updateZobristCode(Position.toInteger(x, y), oldValue, newValue);		
 	}
 	
-	public void setUnitAt(Position pos, int unit) {
-		units[pos.toInteger()] = (byte)unit;
+	public void setUnitAt(Position pos, int unit) {		
+		int oldValue = units[pos.toInteger()];
+		int newValue = (unit == ChessGame.EMPTY ? 0 : (oldValue & ~0x7) | unit); 
+		units[pos.toInteger()] = newValue;
+		updateZobristCode(pos.toInteger(), oldValue, newValue);
 	}
 	
 	public void setUnitAt(int x, int y, int unit) {
-		units[Position.toInteger(x, y)] = (byte)unit;
+		int oldValue = units[Position.toInteger(x, y)];
+		int newValue = (unit == ChessGame.EMPTY ? 0 : (oldValue & ~0x7) | unit); 
+		units[Position.toInteger(x, y)] = newValue;
+		updateZobristCode(Position.toInteger(x, y), oldValue, newValue);
 	}	
 	
 	// return killed unit
@@ -124,11 +165,7 @@ public class BoardImage {
 	public boolean equals(Object obj) {
 		if (obj instanceof BoardImage) {
 			BoardImage board = (BoardImage)obj;
-			for (int i = 0; i < colors.length; i++) {
-				if (colors[i] != board.colors[i] || units[i] != board.units[i])
-					return false;
-			}
-			return true;
+			return getZobristCode() == board.getZobristCode() && Arrays.equals(units, board.units);
 		}
 		else
 			return false;
@@ -157,31 +194,20 @@ public class BoardImage {
 		}
 	}
 	
-	public byte[] compress() {
-		byte[] result = new byte[45];
-		int i = 0;
-		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
-			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y += 2) {
-				result[i] = (byte) ((compressAt(x,y)<<4) | compressAt(x,y+1));
-				i++;
-			}
-		return result;
-	}
-	
-	private byte compressAt(int x, int y) {
-		return (byte) (((getColorAt(x, y) == ChessGame.RED) ? 0x8 : 0x0) | getUnitAt(x, y));
-	}
-	
 	// deep-copy
 	public BoardImage duplicate() {
-		BoardImage board = new BoardImage();
-		for (int i = 0; i < units.length; i++)
-			board.units[i] = units[i];
-		for (int i = 0; i < colors.length; i++)
-			board.colors[i] = colors[i];
-		return board;
+		return new BoardImage(ArrayUtils.clone(units), zobrist);
+	}
+	
+	private void updateZobristCode(int pos, int oldValue, int newValue) {
+		zobrist ^= zobristMasks[pos][oldValue];
+		zobrist ^= zobristMasks[pos][newValue];
+	}
+	
+	public long getZobristCode() {
+		return zobrist;
 	}
 
-	private byte units[];
-	private byte colors[];
+	private int units[];
+	private long zobrist;
 }
