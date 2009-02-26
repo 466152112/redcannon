@@ -67,7 +67,6 @@ public class SearchEngine {
 	
 	private SearchResult doSearch(int alpha, int beta) {
 		int stateId = stat.getNumberOfStates();
-		byte[] boardCompressed = board.compress();
 		int timeLeft = timeLimit - (int)(System.currentTimeMillis() - startTime);
 		stat.increaseStates();
 		stat.updateMaxDepth(depth);
@@ -75,7 +74,7 @@ public class SearchEngine {
 		printEnterStateMessage(stateId, board, player, depth, alpha, beta);
 		
 		// look up hash for identical state
-		StateInfo hashedState = hash.lookUp(boardCompressed, player);
+		StateInfo hashedState = hash.lookUp(board, player);
 		if (hashedState != null) {
 			// check if there's a identical state we've searched before
 			// and it reaches deeper or equal than this
@@ -148,7 +147,7 @@ public class SearchEngine {
 		
 		// update hash
 		if (bestMove != null)
-			hash.put(boardCompressed, player, new StateInfo(stateId, alpha, beta, bestMove, depthLimit - depth));
+			hash.put(board, player, new StateInfo(stateId, alpha, beta, bestMove, depthLimit - depth));
 		
 		if (logger != null)
 			printLeaveStateMessage(bestMove, candi, candiScore);
