@@ -10,7 +10,7 @@ public class EndgameDemo {
 		TimeCounter tc = new TimeCounter();
 		tc.start();
 		
-		SearchEngine engine = new SearchEngine(board.duplicate(), player);
+		NaiveSearchEngine engine = new NaiveSearchEngine(board.duplicate(), player);
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
 		

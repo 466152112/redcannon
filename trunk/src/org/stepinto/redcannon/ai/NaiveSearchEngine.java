@@ -5,7 +5,7 @@ import java.util.*;
 import org.stepinto.redcannon.common.*;
 import org.stepinto.redcannon.ai.log.*;
 
-public class SearchEngine {
+public class NaiveSearchEngine {
 	public static final int DEFAULT_DEPTH_LIMIT = 23;
 	public static final int DEFAULT_TIME_LIMIT = Integer.MAX_VALUE;
 	
@@ -203,7 +203,7 @@ public class SearchEngine {
 		}
 	}
 	
-	public SearchEngine(BoardImage board, int player) {
+	public NaiveSearchEngine(BoardImage board, int player) {
 		this.board = board;
 		this.player = player;
 		
@@ -217,7 +217,7 @@ public class SearchEngine {
 		timeLimit = DEFAULT_TIME_LIMIT;
 	}
 	
-	public SearchEngine(GameState state) {
+	public NaiveSearchEngine(GameState state) {
 		this(state.getBoard(), state.getPlayer());
 	}
 	
