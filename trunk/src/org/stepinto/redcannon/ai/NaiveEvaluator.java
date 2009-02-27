@@ -99,10 +99,10 @@ public class NaiveEvaluator implements Evaluator {
 		}
 		 
 		// check if time's up 
-		if (timeLeft < 0) {
-			String reason = "time's up.";
-			return new EvaluateResult(score, reason);
-		}
+//		if (timeLeft < 0) {
+//			String reason = "time's up.";
+//			return new EvaluateResult(score, reason);
+//		}
 		
 		return null;
 	}
