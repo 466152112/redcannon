@@ -8,6 +8,7 @@ public class IterativeSearchEngine implements SearchEngine {
 	public static final int DEFAULT_DEPTH_LIMIT = 23;
 	public static final int DEFAULT_TIME_LIMIT = 30000;
 	public static final int SERACH_STOP_THRESHOLD = 100;
+	public static final int DEFAULT_ITERATION_STEP = 2;
 	
 	private BoardImage board;
 	private int player;
@@ -35,6 +36,10 @@ public class IterativeSearchEngine implements SearchEngine {
 		this(state.getBoard(), state.getPlayer());
 	}
 	
+	public IterativeSearchEngine() {
+		this(new BoardImage(), ChessGame.RED);
+	}
+
 	@Override
 	public void addEvaluator(Evaluator e) {
 		evaluators = Arrays.copyOf(evaluators, evaluators.length+1);
@@ -58,7 +63,7 @@ public class IterativeSearchEngine implements SearchEngine {
 		SearchResult result = null;
 		
 		counter.start();
-		for (int depth = 1; depth <= depthLimit && counter.getTimeMillis() < timeLimit; depth++) {
+		for (int depth = 1; depth <= depthLimit && counter.getTimeMillis() < timeLimit; depth += DEFAULT_ITERATION_STEP) {
 			// System.out.print("searching... depth=" + depth); 
 			
 			// init naive engine
@@ -73,6 +78,16 @@ public class IterativeSearchEngine implements SearchEngine {
 			
 			// search & get result
 			result = naiveEngine.search();
+			
+			// update stat
+			Statistics naiveStat = naiveEngine.getStatistics();
+			stat.increaseBetaCuts(naiveStat.getNumberOfBetaCuts());
+			stat.increaseEvaluatedStates(naiveStat.getNumberOfEvaluatedStates());
+			stat.increaseHashHits(naiveStat.getNumberOfHashHits());
+			stat.increaseHashMisses(naiveStat.getNumberOfHashMisses());
+			stat.increaseStates(naiveStat.getNumberOfStates());
+			stat.updateMaxDepth(depth);
+			
 			if (result.getScore() > SERACH_STOP_THRESHOLD)
 				break;
 			// System.out.println(", states=" + naiveEngine.getStatistics().getNumberOfStates());

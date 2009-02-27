@@ -14,21 +14,61 @@ public class Statistics {
 	public int getNumberOfStates() {
 		return states;
 	}
+	
+	public int getNumberOfBetaCuts() {
+		return betaCuts;
+	}
+	
+	public int getNumberOfHashHits() {
+		return hashHits;
+	}
+	
+	public int getNumberOfHashMisses() {
+		return hashMisses;
+	}
+	
+	public int getNumberOfEvaluatedStates() {
+		return evaluatedStates;
+	}
 
 	public void increaseStates() {
 		states++;
+	}
+	
+	public void increaseStates(int n) {
+		states += n;
 	}
 	
 	public void increaseHashHits() {
 		hashHits++;
 	}
 	
+	public void increaseHashHits(int n) {
+		hashHits += n;
+	}
+	
 	public void increaseEvaluatedStates() {
 		evaluatedStates++;
 	}
 	
+	public void increaseEvaluatedStates(int n) {
+		evaluatedStates += n;
+	}
+	
 	public void increaseBetaCuts() {
 		betaCuts++;
+	}
+	
+	public void increaseBetaCuts(int n) {
+		betaCuts += n;
+	}
+	
+	public void increaseHashMisses() {
+		hashMisses++;
+	}
+	
+	public void increaseHashMisses(int n) {
+		hashMisses += n;
 	}
 	
 	public void updateMaxDepth(int depth) {
@@ -57,10 +97,7 @@ public class Statistics {
 		out.println("Hash-misses: " + hashMisses);
 		out.println("Evaluated-states: " + evaluatedStates);
 		out.println("Beta-cuts: " + betaCuts);
+		out.println("Max-depth: " + maxDepth);
 		out.printf("Average-degree: %.2f\n", getAverageDegree());
-	}
-
-	public void increaseHashMisses() {
-		hashMisses++;
 	}
 }

@@ -128,6 +128,10 @@ public class NaiveSearchEngine implements SearchEngine {
 		this(state.getBoard(), state.getPlayer());
 	}
 	
+	public NaiveSearchEngine() {
+		this(new BoardImage(), ChessGame.RED);
+	}
+
 	@Override
 	public SearchResult search() {
 		if (logger != null)
