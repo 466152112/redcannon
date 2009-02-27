@@ -5,65 +5,22 @@ import java.util.*;
 import org.stepinto.redcannon.common.*;
 import org.stepinto.redcannon.ai.log.*;
 
-public class NaiveSearchEngine {
+public class NaiveSearchEngine implements SearchEngine {
 	public static final int DEFAULT_DEPTH_LIMIT = 23;
 	public static final int DEFAULT_TIME_LIMIT = Integer.MAX_VALUE;
 	
 	private Evaluator[] evaluators;
 	private Selector[] selectors;
-	private Validator[] validators;
-	
-	public void addEvaluator(Evaluator e) {
-		evaluators = Arrays.copyOf(evaluators, evaluators.length+1);
-		evaluators[evaluators.length-1] = e;
-	}
-	
-	public void addSelector(Selector s) {
-		selectors = Arrays.copyOf(selectors, selectors.length+1);
-		selectors[selectors.length-1] = s;
-	}
-	
-	public void addValidator(Validator v) {
-		validators = Arrays.copyOf(validators, validators.length+1);
-		validators[validators.length-1] = v;
-	}
-	
-	public void setDepthLimit(int depthLimit) {
-		this.depthLimit = depthLimit;
-	}
-
-	public void setTimeLimit(int timeLimit) {
-		this.timeLimit = timeLimit;
-	}
-	
-	public int getDepthLimit() {
-		return depthLimit;
-	}
-	
-	public int getTimeLimit() {
-		return timeLimit;
-	}
-	
-	public StateHash getStateHash() {
-		return hash;
-	}
 
 	private int depthLimit;
 	private int timeLimit;  // unit: ms
-	
 	private long startTime;
-	
 	private BoardImage board;
 	private StateHash hash;
 	private int player;
 	private int depth;
 	private Statistics stat;
-	
 	private SearchLogger logger;
-	
-	public Statistics getStatistics() {
-		return stat;
-	}
 	
 	private SearchResult doSearch(int alpha, int beta) {
 		int stateId = stat.getNumberOfStates();
@@ -154,6 +111,83 @@ public class NaiveSearchEngine {
 		return new SearchResult(bestMove, alpha);
 	} 
 	
+	public NaiveSearchEngine(BoardImage board, int player) {
+		this.board = board;
+		this.player = player;
+		
+		hash = new StateHash();
+		evaluators = new Evaluator[0];
+		selectors = new Selector[0];
+		stat = new Statistics();
+		
+		depthLimit = DEFAULT_DEPTH_LIMIT;
+		timeLimit = DEFAULT_TIME_LIMIT;
+	}
+	
+	public NaiveSearchEngine(GameState state) {
+		this(state.getBoard(), state.getPlayer());
+	}
+	
+	@Override
+	public SearchResult search() {
+		if (logger != null)
+			logger.beginSearch();
+		
+		startTime = System.currentTimeMillis();
+		SearchResult result = doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
+		
+		if (logger != null)
+			logger.endSearch();
+		return result;
+	}
+
+	@Override
+	public void setLogger(SearchLogger logger) {
+		this.logger = logger;
+	}
+
+	@Override
+	public void setStateHash(StateHash hash) {
+		this.hash = hash;
+	}
+
+	@Override
+	public void setInitialBoard(BoardImage board) {
+		this.board = board.duplicate();
+	}
+
+	@Override
+	public void setInitialPlayer(int player) {
+		this.player = player;		
+	}
+	
+	@Override
+	public void addEvaluator(Evaluator e) {
+		evaluators = Arrays.copyOf(evaluators, evaluators.length+1);
+		evaluators[evaluators.length-1] = e;
+	}
+	
+	@Override
+	public void addSelector(Selector s) {
+		selectors = Arrays.copyOf(selectors, selectors.length+1);
+		selectors[selectors.length-1] = s;
+	}
+
+	@Override
+	public void setDepthLimit(int depthLimit) {
+		this.depthLimit = depthLimit;
+	}
+
+	@Override
+	public void setTimeLimit(int timeLimit) {
+		this.timeLimit = timeLimit;
+	}
+	
+	@Override
+	public Statistics getStatistics() {
+		return stat;
+	}
+	
 	private void printIdenticalStateFoundMessage(StateInfo hashedState) {
 		if (logger != null) {
 			logger.printMessage("Identical state found in hash.\n");
@@ -201,39 +235,5 @@ public class NaiveSearchEngine {
 			}
 			logger.leaveState();
 		}
-	}
-	
-	public NaiveSearchEngine(BoardImage board, int player) {
-		this.board = board;
-		this.player = player;
-		
-		hash = new StateHash();
-		evaluators = new Evaluator[0];
-		selectors = new Selector[0];
-		validators = new Validator[0];
-		stat = new Statistics();
-		
-		depthLimit = DEFAULT_DEPTH_LIMIT;
-		timeLimit = DEFAULT_TIME_LIMIT;
-	}
-	
-	public NaiveSearchEngine(GameState state) {
-		this(state.getBoard(), state.getPlayer());
-	}
-	
-	public SearchResult search() {
-		if (logger != null)
-			logger.beginSearch();
-		
-		startTime = System.currentTimeMillis();
-		SearchResult result = doSearch(Evaluator.MIN_SCORE, Evaluator.MAX_SCORE);
-		
-		if (logger != null)
-			logger.endSearch();
-		return result;
-	}
-
-	public void setLogger(SearchLogger logger) {
-		this.logger = logger;
 	}
 }
