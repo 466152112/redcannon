@@ -9,7 +9,7 @@ import org.stepinto.redcannon.ai.log.*;
 public class EndgameTest {
 	public void run(File file, boolean debug) throws InvalidFenFormatException, IOException {
 		GameState state = FenParser.parseFile(file);
-		NaiveSearchEngine engine = new NaiveSearchEngine(state);
+		SearchEngine engine = new NaiveSearchEngine(state);
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
 		

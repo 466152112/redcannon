@@ -33,7 +33,7 @@ public class EndgameBenchmark {
 		public void run() {
 			try {
 				GameState state = FenParser.parseFile(file);
-				NaiveSearchEngine engine = new NaiveSearchEngine(state);
+				SearchEngine engine = new NaiveSearchEngine(state);
 				engine.addEvaluator(new NaiveEvaluator());
 				engine.addSelector(new NaiveSelector());
 				
