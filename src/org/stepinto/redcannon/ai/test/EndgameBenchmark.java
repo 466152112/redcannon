@@ -8,6 +8,7 @@ import org.stepinto.redcannon.common.*;
 public class EndgameBenchmark {
 	private static int timeLimit = 30;
 	private static int depthLimit = NaiveSearchEngine.DEFAULT_DEPTH_LIMIT;
+	private static boolean iterative = false;
 	
 	private static class WorkerThread extends Thread {
 		private File file;
@@ -33,7 +34,7 @@ public class EndgameBenchmark {
 		public void run() {
 			try {
 				GameState state = FenParser.parseFile(file);
-				SearchEngine engine = new NaiveSearchEngine(state);
+				SearchEngine engine = (iterative ? new IterativeSearchEngine(state) : new NaiveSearchEngine(state));
 				engine.addEvaluator(new NaiveEvaluator());
 				engine.addSelector(new NaiveSelector());
 				
@@ -66,6 +67,8 @@ public class EndgameBenchmark {
 				i++;
 				depthLimit = Integer.parseInt(args[i]); 
 			}
+			else if (args[i].equals("--iterative"))
+				iterative = true;
 			else
 				dir = new File(args[i]);
 		}

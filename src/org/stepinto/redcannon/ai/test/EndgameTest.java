@@ -7,9 +7,9 @@ import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.ai.log.*;
 
 public class EndgameTest {
-	public void run(File file, boolean debug) throws InvalidFenFormatException, IOException {
+	public void run(File file, boolean debug, boolean iterative) throws InvalidFenFormatException, IOException {
 		GameState state = FenParser.parseFile(file);
-		SearchEngine engine = new NaiveSearchEngine(state);
+		SearchEngine engine = (iterative ? new IterativeSearchEngine(state) : new NaiveSearchEngine(state));
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
 		
@@ -29,12 +29,15 @@ public class EndgameTest {
 	
 	public static void main(String args[]) throws Exception {
 		boolean debug = false;
+		boolean iterative = false;
 		File file = new File("test/endgames");
 		
 		// parse arg
 		for (String arg : args)
 			if (arg.equals("--debug"))
 				debug = true;
+			else if (arg.equals("--iterative"))
+				iterative = true;
 			else
 				file = new File(arg);
 				
@@ -49,10 +52,10 @@ public class EndgameTest {
 			File[] files = file.listFiles(filter);
 			Arrays.sort(files);
 			for (File f : files)
-				new EndgameTest().run(f, debug);
+				new EndgameTest().run(f, debug, iterative);
 		}
 		else {
-			new EndgameTest().run(file, debug);
+			new EndgameTest().run(file, debug, iterative);
 		}
 	}
 }
