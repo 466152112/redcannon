@@ -142,7 +142,8 @@ public class ChessEngineLoader extends Thread {
 		else {
 			Position source = move.getSource();
 			Position target = move.getTarget();
-			System.out.printf("bestmove %c%d%c%d\n", source.getX() + 'a', source.getY(), target.getX() + 'a', target.getY());
+			System.out.printf("bestmove %c%d%c%d\n", source.getX() + 'a', ChessGame.BOARD_HEIGHT - source.getY() - 1,
+					target.getX() + 'a', ChessGame.BOARD_HEIGHT - target.getY() - 1);
 		}
 	}
 
