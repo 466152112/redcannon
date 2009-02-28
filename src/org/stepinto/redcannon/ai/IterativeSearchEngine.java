@@ -63,7 +63,7 @@ public class IterativeSearchEngine implements SearchEngine {
 		SearchResult result = null;
 		
 		counter.start();
-		for (int depth = 1; depth <= depthLimit && counter.getTimeMillis() < timeLimit; depth += DEFAULT_ITERATION_STEP) {
+		for (int depth = 1; depth <= depthLimit; depth += DEFAULT_ITERATION_STEP) {
 			// System.out.print("searching... depth=" + depth); 
 			
 			// init naive engine
@@ -75,9 +75,10 @@ public class IterativeSearchEngine implements SearchEngine {
 			naiveEngine.setStateHash(hash);
 			naiveEngine.setLogger(logger);
 			naiveEngine.setDepthLimit(depth);
+			naiveEngine.setTimeLimit((int)(timeLimit - counter.getTimeMillis()));
 			
 			// search & get result
-			result = naiveEngine.search();
+			SearchResult tmpResult = naiveEngine.search();
 			
 			// update stat
 			Statistics naiveStat = naiveEngine.getStatistics();
@@ -88,9 +89,12 @@ public class IterativeSearchEngine implements SearchEngine {
 			stat.increaseStates(naiveStat.getNumberOfStates());
 			stat.updateMaxDepth(depth);
 			
-			if (result.getScore() > SERACH_STOP_THRESHOLD)
+			if (counter.getTimeMillis() > timeLimit)
 				break;
-			// System.out.println(", states=" + naiveEngine.getStatistics().getNumberOfStates());
+			if (tmpResult != null && tmpResult.getScore() > SERACH_STOP_THRESHOLD)
+				break;
+			
+			result = tmpResult;
 		}
 		
 		return result;
@@ -124,5 +128,10 @@ public class IterativeSearchEngine implements SearchEngine {
 	@Override
 	public void setTimeLimit(int timeLimit) {
 		this.timeLimit = timeLimit;
+	}
+	
+	@Override
+	public void clearHash() {
+		hash.clear();
 	}
 }

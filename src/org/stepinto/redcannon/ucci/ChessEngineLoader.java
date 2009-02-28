@@ -88,7 +88,7 @@ public class ChessEngineLoader extends Thread {
 			throw new InvalidMoveStringException("The input string is too long or short.");
 	}
 	
-	private void log(String line) {
+/*	private void log(String line) {
 		try {
 			PrintStream stream = new PrintStream(new FileOutputStream(new File("d:\\a.txt"), true));
 			stream.println(line);
@@ -96,14 +96,14 @@ public class ChessEngineLoader extends Thread {
 		} catch (Exception ex) {
 		}
 	}
-
+*/
 	public void run() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String line;
 		
 		try {
 			while ((line = reader.readLine()) != null) {
-				log(line);
+				// log(line);
 				
 				String cmd[] = line.split("\\ +");
 				if (cmd[0].equalsIgnoreCase("ucci"))

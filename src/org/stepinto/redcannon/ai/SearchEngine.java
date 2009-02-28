@@ -14,6 +14,8 @@ public interface SearchEngine {
 	public void setLogger(SearchLogger logger);
 	public void setStateHash(StateHash hash);
 	
+	public void clearHash();
+	
 	public SearchResult search();
 	public Statistics getStatistics();
 }
