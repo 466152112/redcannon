@@ -56,7 +56,7 @@ public class RuleEngine {
 				// skip it and continue to move, until we meet another or are out of board
 				nx += dx;
 				ny += dy;
-				while (Position.isValid(nx, ny) && !board.isEmptyAt(nx, ny)) {
+				while (Position.isValid(nx, ny) && board.isEmptyAt(nx, ny)) {
 					nx += dx;
 					ny += dy;
 				}
