@@ -64,7 +64,7 @@ public class NaiveEvaluator implements Evaluator {
 	}
 	
 	@Override
-	public EvaluateResult evaluate(BoardImage board, int player, int depth,
+	public EvaluateResult evaluate(BoardImage board, int player, int depth, int alpha, int beta,
 			int depthLimit, int timeLeft, SearchLogger logger) {
 		// check if one player's king has been killed
 		int playerHasNoKing = getPlayerHasNoKing(board);
@@ -98,11 +98,12 @@ public class NaiveEvaluator implements Evaluator {
 			return new EvaluateResult(score, reason);
 		}
 		 
-		// check if time's up 
-//		if (timeLeft < 0) {
-//			String reason = "time's up.";
-//			return new EvaluateResult(score, reason);
-//		}
+		// check if time's up
+		// return a large value to make the caller not to update its current alpha
+		if (timeLeft < 0) {
+			String reason = "time's up.";
+			return new EvaluateResult(Evaluator.MAX_SCORE, reason);
+		}
 		
 		return null;
 	}

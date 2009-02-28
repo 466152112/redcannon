@@ -7,11 +7,12 @@ import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.ai.log.*;
 
 public class EndgameTest {
-	public void run(File file, boolean debug, boolean iterative) throws InvalidFenFormatException, IOException {
+	public void run(File file, boolean debug, boolean iterative, int timeLimit) throws InvalidFenFormatException, IOException {
 		GameState state = FenParser.parseFile(file);
 		SearchEngine engine = (iterative ? new IterativeSearchEngine(state) : new NaiveSearchEngine(state));
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
+		engine.setTimeLimit(timeLimit);
 		
 		if (debug) {
 			File logFile = new File(file.getAbsolutePath() + ".log");
@@ -30,16 +31,22 @@ public class EndgameTest {
 	public static void main(String args[]) throws Exception {
 		boolean debug = false;
 		boolean iterative = false;
+		int timeLimit = Integer.MAX_VALUE;
 		File file = new File("test/endgames");
 		
 		// parse arg
-		for (String arg : args)
-			if (arg.equals("--debug"))
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("--debug"))
 				debug = true;
-			else if (arg.equals("--iterative"))
+			else if (args[i].equals("--iterative"))
 				iterative = true;
+			else if (args[i].equals("--time-limit")) {
+				i++;
+				timeLimit = Integer.parseInt(args[i]) * 1000;
+			}
 			else
-				file = new File(arg);
+				file = new File(args[i]);
+		}
 				
 		// process
 		if (file.isDirectory()) {
@@ -52,10 +59,10 @@ public class EndgameTest {
 			File[] files = file.listFiles(filter);
 			Arrays.sort(files);
 			for (File f : files)
-				new EndgameTest().run(f, debug, iterative);
+				new EndgameTest().run(f, debug, iterative, timeLimit);
 		}
 		else {
-			new EndgameTest().run(file, debug, iterative);
+			new EndgameTest().run(file, debug, iterative, timeLimit);
 		}
 	}
 }

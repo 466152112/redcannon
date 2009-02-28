@@ -28,6 +28,7 @@ public class SelfGameTest {
 			
 			engine.setInitialBoard(board);
 			engine.setInitialPlayer(player);
+			engine.clearHash();
 			
 			TimeCounter counter = new TimeCounter();
 			counter.start();
@@ -35,6 +36,7 @@ public class SelfGameTest {
 			SearchResult result = engine.search();
 			System.out.println(counter.getTimeString());
 			result.dump(System.out);
+			engine.getStatistics().dump(System.out);
 			System.out.println();
 			
 			board.performMove(result.getBestMove());

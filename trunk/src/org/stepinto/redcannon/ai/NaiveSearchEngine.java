@@ -46,7 +46,7 @@ public class NaiveSearchEngine implements SearchEngine {
 		
 		// call each evaluator
 		for (Evaluator e : evaluators) {
-			EvaluateResult result = e.evaluate(board, player, depth, depthLimit, timeLeft, logger);
+			EvaluateResult result = e.evaluate(board, player, depth, alpha, beta, depthLimit, timeLeft, logger);
 			if (result != null) {
 				printEvaluateMessage(result, e);
 				stat.increaseEvaluatedStates();
@@ -239,5 +239,10 @@ public class NaiveSearchEngine implements SearchEngine {
 			}
 			logger.leaveState();
 		}
+	}
+	
+	@Override
+	public void clearHash() {
+		hash.clear();
 	}
 }

@@ -42,4 +42,8 @@ public class StateHash {
 	public void putAll(StateHash sh) {
 		hash.putAll(sh.hash);
 	}
+
+	public void clear() {
+		hash.clear();
+	}
 }

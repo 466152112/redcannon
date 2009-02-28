@@ -7,6 +7,6 @@ public interface Evaluator {
 	public static final int MIN_SCORE = -1000;
 	public static final int MAX_SCORE = +1000;
 
-	public EvaluateResult evaluate(BoardImage board, int player, int depth,
+	public EvaluateResult evaluate(BoardImage board, int player, int depth, int alpha, int beta,
 			int depthLimit, int timeLeft, SearchLogger logger); 
 }
