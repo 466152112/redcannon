@@ -267,4 +267,9 @@ public class BoardWindow extends Thread {
 		while (true)
 			System.out.println(window.waitForUserMove());
 	}
+
+	public void selectUnit(Position pos) {
+		state = WAIT_FOR_SELECT_TARGET;
+		sourcePos = pos;
+	}
 }
