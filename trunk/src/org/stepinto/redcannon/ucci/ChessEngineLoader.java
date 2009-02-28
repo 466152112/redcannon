@@ -77,8 +77,8 @@ public class ChessEngineLoader extends Thread {
 			
 			if ('a' <= ch1 && ch1 <= 'i' && '0' <= ch2 && ch2 <= '9' &&
 				'a' <= ch3 && ch3 <= 'i' && '0' <= ch4 && ch4 <= '9') {
-				Position source = new Position(ch1 - 'a', ch2 - '9');
-				Position target = new Position(ch3 - 'a', ch4 - '9');
+				Position source = new Position(ch1 - 'a', ChessGame.BOARD_HEIGHT - ch2 + '0' - 1);
+				Position target = new Position(ch3 - 'a', ChessGame.BOARD_HEIGHT - ch4 + '0' - 1);
 				return new Move(source, target);
 			}
 			else
@@ -87,6 +87,15 @@ public class ChessEngineLoader extends Thread {
 		else
 			throw new InvalidMoveStringException("The input string is too long or short.");
 	}
+	
+	private void log(String line) {
+		try {
+			PrintStream stream = new PrintStream(new FileOutputStream(new File("d:\\a.txt"), true));
+			stream.println(line);
+			stream.close();
+		} catch (Exception ex) {
+		}
+	}
 
 	public void run() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -94,6 +103,8 @@ public class ChessEngineLoader extends Thread {
 		
 		try {
 			while ((line = reader.readLine()) != null) {
+				log(line);
+				
 				String cmd[] = line.split("\\ +");
 				if (cmd[0].equalsIgnoreCase("ucci"))
 					processHello(cmd);

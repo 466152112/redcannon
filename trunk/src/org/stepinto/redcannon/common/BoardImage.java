@@ -182,7 +182,7 @@ public class BoardImage {
 		for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++) {
 			out.print(y);
 			
-			for (int x = 0; x < ChessGame.BOARD_HEIGHT; x++) {
+			for (int x = 0; x < ChessGame.BOARD_WIDTH; x++) {
 				out.print(" ");
 				
 				if (isEmptyAt(x, y))
