@@ -3,26 +3,39 @@ package org.stepinto.redcannon.ai.test;
 import java.io.*;
 import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.common.*;
+import org.stepinto.redcannon.ui.*;
 
 public class SelfGameTest {
 	public static void main(String args[]) throws Exception {
 		// boolean iterative = false;
 		File fen = null;
+		boolean gui = false;
+		int timeLimit = 5000;
 		
 		// parse args
-		if (args.length > 0)
-			fen = new File(args[0]);
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("--gui"))
+				gui = true;
+			else if (args[i].equals("--time-limit")) {
+				i++;
+				timeLimit = Integer.parseInt(args[i]) * 1000;
+			}
+			else
+				fen = new File(args[i]);
+		}
 		
 		// set up engine
 		SearchEngine engine = new IterativeSearchEngine();
 		engine.addEvaluator(new NaiveEvaluator());
 		engine.addSelector(new NaiveSelector());
-		engine.setTimeLimit(5000);
+		engine.setTimeLimit(timeLimit);
 		
 		// go
 		BoardImage board = (fen == null ? GameUtility.createStartBoard() : FenParser.parseFile(fen).getBoard());
+		BoardWindow window = new BoardWindow(board);
 		int player = (fen == null ? ChessGame.RED : FenParser.parseFile(fen).getPlayer());
 		
+		window.start();
 		while (true) {
 			board.dump(System.out);
 			
@@ -40,6 +53,8 @@ public class SelfGameTest {
 			System.out.println();
 			
 			board.performMove(result.getBestMove());
+			window.selectUnit(result.getBestMove().getTarget());
+			window.redraw();
 			if (GameUtility.hasPlayerWon(board, player)) {
 				System.out.println(GameUtility.getColorName(player) + " has won.");
 				return;
