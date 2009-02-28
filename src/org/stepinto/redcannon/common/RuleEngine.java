@@ -205,7 +205,7 @@ public class RuleEngine {
 			int dx = DX[i];
 			int dy = DY[i];
 			int nx = x + dx;
-			int ny = y + dx;
+			int ny = y + dy;
 			while (Position.isValid(nx, ny) && board.isEmptyAt(nx, ny)) {
 				legalMoves[count] = new Position(nx, ny);
 				nx += dx;
