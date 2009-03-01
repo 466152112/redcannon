@@ -40,10 +40,23 @@ public class NaiveSelector implements Selector {
 							}
 						}
 						
+						priority += historyTable.getMoveScore(move);
+						
 						board.unperformMove(move, killedUnit);
 						candi.add(new Candidate(move, priority, reason));
 					}
 				}
 	}
+
+	@Override
+	public void notifyBestMove(BoardImage board, int player, int depth,
+			Move bestMove, int score) {
+		if (bestMove != null)
+			historyTable.addMove(bestMove);
+//		if (depth == 0)
+//			historyTable.dump(System.out);
+	}
+	
+	private HistoryMoveTable historyTable = new HistoryMoveTable();
 
 }
