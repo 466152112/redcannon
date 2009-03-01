@@ -107,4 +107,10 @@ public class NaiveEvaluator implements Evaluator {
 		
 		return null;
 	}
+
+	@Override
+	public void notifyBestMove(BoardImage board, int player, int depth,
+			Move bestMove, int score) {
+		
+	}
 }

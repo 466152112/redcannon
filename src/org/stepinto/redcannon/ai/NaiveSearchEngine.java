@@ -106,6 +106,12 @@ public class NaiveSearchEngine implements SearchEngine {
 		if (bestMove != null)
 			hash.put(board, player, new StateInfo(stateId, alpha, beta, bestMove, depthLimit - depth));
 		
+		// notify best-move
+		for (Evaluator e : evaluators)
+			e.notifyBestMove(board, player, depth, bestMove, alpha);
+		for (Selector s : selectors)
+			s.notifyBestMove(board, player, depth, bestMove, alpha);
+		
 		if (logger != null)
 			printLeaveStateMessage(bestMove, candi, candiScore);
 		return new SearchResult(bestMove, alpha);

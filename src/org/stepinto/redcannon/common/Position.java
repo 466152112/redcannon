@@ -6,6 +6,11 @@ public class Position {
 		this.y = (short)y;
 	}
 
+	public Position(int value) {
+		this.x = (short)(value >> 4);
+		this.y = (short)(value & 0xf);
+	}
+
 	public int getX() {
 		return x;
 	}
