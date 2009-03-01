@@ -79,6 +79,7 @@ public class IterativeSearchEngine implements SearchEngine {
 			
 			// search & get result
 			SearchResult tmpResult = naiveEngine.search();
+			// System.out.printf("depth=%d, score=%d\n", depth, tmpResult.getScore());
 			
 			// update stat
 			Statistics naiveStat = naiveEngine.getStatistics();
@@ -91,10 +92,9 @@ public class IterativeSearchEngine implements SearchEngine {
 			
 			if (counter.getTimeMillis() > timeLimit)
 				break;
+			result = tmpResult;
 			if (tmpResult != null && tmpResult.getScore() > SERACH_STOP_THRESHOLD)
 				break;
-			
-			result = tmpResult;
 		}
 		
 		return result;
