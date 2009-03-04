@@ -45,7 +45,7 @@ public class EndgameBenchmark {
 				counter.start();
 				SearchResult sr = engine.search();
 				
-				result = String.format("%s\t%s", counter.getTimeString(), getWinner(state.getPlayer(), sr.getScore()));
+				result = String.format("%s\t%s\t%d", getWinner(state.getPlayer(), sr.getScore()), counter.getTimeString(), engine.getStatistics().getNumberOfStates());
 				return;
 			} 
 			catch (Exception ex) {
