@@ -6,7 +6,6 @@ import java.util.*;
 public class StateHash {
 	private static long BLACK_MASK;
 	private static long RED_MASK;
-	// private static final int INITIAL_HASH_CAPACITY = 64*1024*1024 - 1;
 	
 	static {
 		Random random = new Random();
