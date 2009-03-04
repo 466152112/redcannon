@@ -25,9 +25,10 @@ public class SelfGameTest {
 		}
 		
 		// set up engine
+		StateSet historyStates = new StateSet();
 		SearchEngine engine = new IterativeSearchEngine();
 		engine.addEvaluator(new NaiveEvaluator());
-		engine.addSelector(new NaiveSelector());
+		engine.addSelector(new NaiveSelector(historyStates));
 		engine.setTimeLimit(timeLimit);
 		
 		// go
@@ -38,6 +39,7 @@ public class SelfGameTest {
 		window.start();
 		while (true) {
 			board.dump(System.out);
+			historyStates.add(board, player);
 			
 			engine.setInitialBoard(board);
 			engine.setInitialPlayer(player);
