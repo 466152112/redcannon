@@ -16,7 +16,7 @@ public class NaiveSearchEngine implements SearchEngine {
 	private int timeLimit;  // unit: ms
 	private long startTime;
 	private BoardImage board;
-	private StateHash hash;
+	private StateHash<StateInfo> hash;
 	private int player;
 	private int depth;
 	private Statistics stat;
@@ -121,7 +121,7 @@ public class NaiveSearchEngine implements SearchEngine {
 		this.board = board;
 		this.player = player;
 		
-		hash = new StateHash();
+		hash = new StateHash<StateInfo>();
 		evaluators = new Evaluator[0];
 		selectors = new Selector[0];
 		stat = new Statistics();
@@ -157,7 +157,7 @@ public class NaiveSearchEngine implements SearchEngine {
 	}
 
 	@Override
-	public void setStateHash(StateHash hash) {
+	public void setStateHash(StateHash<StateInfo> hash) {
 		this.hash = hash;
 	}
 

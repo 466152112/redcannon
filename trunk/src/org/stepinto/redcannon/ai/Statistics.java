@@ -1,7 +1,6 @@
 package org.stepinto.redcannon.ai;
 
 import java.io.*;
-import java.util.*;
 
 public class Statistics {
 	private int states;
