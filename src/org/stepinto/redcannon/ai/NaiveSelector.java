@@ -8,7 +8,7 @@ public class NaiveSelector implements Selector {
 
 	@Override
 	public void select(List<Candidate> candi, BoardImage board, int player,
-			int depth, int alpha, int beta, int depthLimit, StateHash hash, SearchLogger logger) {
+			int depth, int alpha, int beta, int depthLimit, StateHash<StateInfo> hash, SearchLogger logger) {
 		int opponent = GameUtility.getOpponent(player);
 		
 		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)

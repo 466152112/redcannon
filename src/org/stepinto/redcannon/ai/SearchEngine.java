@@ -12,7 +12,7 @@ public interface SearchEngine {
 	public void setDepthLimit(int depthLimit);
 	public void setTimeLimit(int timeLimit);
 	public void setLogger(SearchLogger logger);
-	public void setStateHash(StateHash hash);
+	public void setStateHash(StateHash<StateInfo> hash);
 	
 	public void clearHash();
 	

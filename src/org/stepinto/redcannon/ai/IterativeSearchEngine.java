@@ -17,7 +17,7 @@ public class IterativeSearchEngine implements SearchEngine {
 	private int depthLimit;
 	private int timeLimit;
 	private SearchLogger logger;
-	private StateHash hash;
+	private StateHash<StateInfo> hash;
 	private Statistics stat;
 	
 	public IterativeSearchEngine(BoardImage board, int player) {
@@ -28,7 +28,7 @@ public class IterativeSearchEngine implements SearchEngine {
 		selectors = new Selector[0];
 		depthLimit = DEFAULT_DEPTH_LIMIT;
 		timeLimit = DEFAULT_TIME_LIMIT;
-		hash = new StateHash();
+		hash = new StateHash<StateInfo>();
 		stat = new Statistics();
 	}
 	
@@ -121,7 +121,7 @@ public class IterativeSearchEngine implements SearchEngine {
 	}
 
 	@Override
-	public void setStateHash(StateHash hash) {
+	public void setStateHash(StateHash<StateInfo> hash) {
 		this.hash = hash;
 	}
 

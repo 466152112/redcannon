@@ -3,7 +3,7 @@ package org.stepinto.redcannon.ai;
 import org.stepinto.redcannon.common.*;
 import java.util.*;
 
-public class StateHash {
+public class StateHash<T> {
 	private static long BLACK_MASK;
 	private static long RED_MASK;
 	
@@ -13,14 +13,14 @@ public class StateHash {
 		RED_MASK = random.nextLong();
 	}
 
-	private Map<Long, StateInfo> hash = new HashMap<Long, StateInfo>();
+	private Map<Long, T> hash = new HashMap<Long, T>();
 	
-	public StateInfo lookUp(BoardImage board, int player) {
+	public T lookUp(BoardImage board, int player) {
 		long key = getHashKey(board, player);
 		return hash.get(key);
 	}
 	
-	public void put(BoardImage board, int player, StateInfo info) {
+	public void put(BoardImage board, int player, T info) {
 		long key = getHashKey(board, player);
 		hash.put(key, info);
 	}
@@ -38,7 +38,7 @@ public class StateHash {
 		}
 	}
 
-	public void putAll(StateHash sh) {
+	public void putAll(StateHash<T> sh) {
 		hash.putAll(sh.hash);
 	}
 
