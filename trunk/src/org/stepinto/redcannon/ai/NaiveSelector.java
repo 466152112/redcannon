@@ -41,6 +41,7 @@ public class NaiveSelector implements Selector {
 						}
 						
 						priority += historyTable.getMoveScore(move);
+						priority += killerTable.getMoveScore(depth, move);
 						
 						board.unperformMove(move, killedUnit);
 						candi.add(new Candidate(move, priority, reason));
@@ -51,12 +52,14 @@ public class NaiveSelector implements Selector {
 	@Override
 	public void notifyBestMove(BoardImage board, int player, int depth,
 			Move bestMove, int score) {
-		if (bestMove != null)
+		if (bestMove != null) {
 			historyTable.addMove(bestMove);
+			killerTable.addMove(depth, bestMove);
+		}
 //		if (depth == 0)
 //			historyTable.dump(System.out);
 	}
 	
 	private HistoryMoveTable historyTable = new HistoryMoveTable();
-
+	private KillerMoveTable killerTable = new KillerMoveTable();
 }
