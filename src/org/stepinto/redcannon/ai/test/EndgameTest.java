@@ -23,9 +23,12 @@ public class EndgameTest {
 		System.out.println(file.getPath());
 		state.getBoard().dump(System.out);
 		
+		TimeCounter counter = new TimeCounter();
+		counter.start();
 		SearchResult result = engine.search();
 		result.dump(System.out);
 		engine.getStatistics().dump(System.out);
+		System.out.println("Time: " + counter.getTimeString());
 	}
 	
 	public static void main(String args[]) throws Exception {
