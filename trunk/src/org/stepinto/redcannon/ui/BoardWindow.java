@@ -26,8 +26,9 @@ public class BoardWindow extends Thread {
 	private static final RGB UNIT_BACKGROUND_COLOR = new RGB(255, 237, 162);
 
 	// state
-	private static final int WAIT_FOR_SELECT_UNIT = 0;
-	private static final int WAIT_FOR_SELECT_TARGET = 1;
+	private static final int NO_INTERACTION = 0;
+	private static final int WAIT_FOR_SELECT_UNIT = 1;
+	private static final int WAIT_FOR_SELECT_TARGET = 2;
 
 	private BoardImage board;
 	private int state;
@@ -47,14 +48,14 @@ public class BoardWindow extends Thread {
 
 	public BoardWindow(BoardImage board) {
 		this.board = board;
-		this.state = WAIT_FOR_SELECT_UNIT;
+		this.state = NO_INTERACTION;
 	}
 
 	public Move waitForUserMove() {
+		state = WAIT_FOR_SELECT_UNIT;
 		while (targetPos == null || sourcePos == null)
 			sleep(100);
 		Move ret = new Move(sourcePos, targetPos);
-		state = WAIT_FOR_SELECT_UNIT;
 		sourcePos = null;
 		targetPos = null;
 		return ret;
@@ -116,12 +117,12 @@ public class BoardWindow extends Thread {
 								state = WAIT_FOR_SELECT_TARGET;
 							} else {
 								targetPos = pos;
-								state = WAIT_FOR_SELECT_UNIT;
+								state = NO_INTERACTION;
 							}
 						// }
 					} else {
-						sourcePos = null;
-						state = WAIT_FOR_SELECT_UNIT;
+						// sourcePos = null;
+						// state = WAIT_FOR_SELECT_UNIT;
 					}
 					redraw();
 				}
@@ -177,7 +178,7 @@ public class BoardWindow extends Thread {
 		for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
 			drawLine(gc, 0, y, ChessGame.BOARD_WIDTH - 1, y);
 		drawLine(gc, 0, 0, 0, ChessGame.BOARD_HEIGHT - 1);
-		drawLine(gc, ChessGame.BOARD_WIDTH - 1, 0, ChessGame.BOARD_WIDTH - 1, ChessGame.BOARD_HEIGHT);
+		drawLine(gc, ChessGame.BOARD_WIDTH - 1, 0, ChessGame.BOARD_WIDTH - 1, ChessGame.BOARD_HEIGHT - 1);
 
 		// draw palace area
 		final int PALACE_MIN_X = 3;
@@ -271,7 +272,7 @@ public class BoardWindow extends Thread {
 	}
 
 	public void selectUnit(Position pos) {
-		state = WAIT_FOR_SELECT_TARGET;
+		// state = WAIT_FOR_SELECT_TARGET;
 		sourcePos = pos;
 	}
 }
