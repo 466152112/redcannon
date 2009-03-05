@@ -39,6 +39,9 @@ public class DemoApplet extends Applet implements MouseListener {
 	private static final int WAIT_FOR_SELECT_TARGET = 2;
 	private int state;
 	
+	// double buffer
+	// TODO:
+	
 	@Override
 	public void init() {
 		setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -158,6 +161,8 @@ public class DemoApplet extends Applet implements MouseListener {
 	}
 	
 	public void drawUnit(Graphics g, Position pos, int unit) {
+		
+		
 		Color textColor = board.getColorAt(pos) == ChessGame.BLACK ? BLACK_UNIT_TEXT_COLOR
 				: RED_UNIT_TEXT_COLOR;
 		int centerX = pos.getX() * GRID_SIZE + MARGIN;
@@ -271,6 +276,6 @@ public class DemoApplet extends Applet implements MouseListener {
 		else if (Font.getFont("黑体") != null)
 			return new Font("黑体", Font.PLAIN, UNIT_TEXT_FONT_SIZE);
 		else
-			return new Font(null, Font.PLAIN, UNIT_TEXT_FONT_SIZE);
+			return new Font(null, Font.BOLD, UNIT_TEXT_FONT_SIZE);
 	}
 }
