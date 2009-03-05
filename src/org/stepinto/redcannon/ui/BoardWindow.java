@@ -176,6 +176,8 @@ public class BoardWindow extends Thread {
 		}
 		for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
 			drawLine(gc, 0, y, ChessGame.BOARD_WIDTH - 1, y);
+		drawLine(gc, 0, 0, 0, ChessGame.BOARD_HEIGHT - 1);
+		drawLine(gc, ChessGame.BOARD_WIDTH - 1, 0, ChessGame.BOARD_WIDTH - 1, ChessGame.BOARD_HEIGHT);
 
 		// draw palace area
 		final int PALACE_MIN_X = 3;
