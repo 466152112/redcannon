@@ -82,19 +82,19 @@ public class GameUtility {
 		
 		switch (unit) {
 		case ChessGame.ADVISOR:
-			return color == BLACK ? "Ê¿" : "ÊË";
+			return color == BLACK ? "å£«" : "ä»•";
 		case ChessGame.CANNON:
-			return color == BLACK ? "³h" : "ÅÚ";
+			return color == BLACK ? "ç ²" : "ç‚®";
 		case ChessGame.ELEPHANT:
-			return color == BLACK ? "Ïó" : "Ïà";
+			return color == BLACK ? "è±¡" : "ç›¸";
 		case ChessGame.HORSE:
-			return "Âí";
+			return "é©¬";
 		case ChessGame.KING:
-			return color == BLACK ? "½«" : "Ë§";
+			return color == BLACK ? "å°†" : "å¸…";
 		case ChessGame.PAWN:
-			return color == BLACK ? "×ä" : "±ø";
+			return color == BLACK ? "å’" : "å…µ";
 		case ChessGame.ROOK:
-			return "³µ";
+			return "è½¦";
 		default:
 			assert(false);
 			return null;
