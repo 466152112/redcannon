@@ -35,7 +35,7 @@ public class BoardWindow extends Thread {
 	private Position targetPos;
 	private Position sourcePos;
 
-	private Font unitTextFont;
+	// private Font unitTextFont;
 
 	// ui widgets
 	private Display display;
