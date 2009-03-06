@@ -39,8 +39,8 @@ public class DemoApplet extends Applet implements MouseListener {
 	private static final int WAIT_FOR_SELECT_TARGET = 2;
 	private int state;
 	
-	// double buffer
-	// TODO:
+	// double-buffer
+	Image offscreen;
 	
 	@Override
 	public void init() {
@@ -49,6 +49,7 @@ public class DemoApplet extends Applet implements MouseListener {
 		addMouseListener(this);
 		setFont(getUnitTextFont());
 		
+		offscreen = createImage(CANVAS_WIDTH, CANVAS_HEIGHT);
 		board = GameUtility.createStartBoard();
 		new Thread() {
 			@Override
@@ -88,7 +89,6 @@ public class DemoApplet extends Applet implements MouseListener {
 			}
 			
 			public Move getAiMove(BoardImage board, int player) {
-				System.out.print("Wait for AI-player...");
 				TimeCounter tc = new TimeCounter();
 				tc.start();
 				
@@ -109,11 +109,12 @@ public class DemoApplet extends Applet implements MouseListener {
 	public void paint(Graphics g) {
 		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		drawBoard(g);
+		drawBoard(offscreen.getGraphics());
 		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
 			for (int y = 0; y < ChessGame.BOARD_HEIGHT; y++)
 				if (!board.isEmptyAt(x, y))
-					drawUnit(g, new Position(x, y), board.getUnitAt(x, y)); 
+					drawUnit(offscreen.getGraphics(), new Position(x, y), board.getUnitAt(x, y));
+		g.drawImage(offscreen, 0, 0, this);
 	}
 	
 	public void drawBoard(Graphics g) {
