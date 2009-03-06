@@ -29,9 +29,17 @@
 	</target>
 
 	<target name="build-applet" depends="compile">
-		<jar destfile="redcannon-applet.jar">
+		<delete file="redcannon-applet-win32.jar" />
+		<delete file="redcannon-applet-gtk.jar" />
+		<jar destfile="redcannon-applet-win32.jar">
 			<fileset dir="${build.dir}" includes="**/*.class" />
-			<zipfileset src="${lib.dir}/commons-lang.jar" excludes="META-INF/*" />
+			<zipfileset src="${lib.dir}/commons-lang.jar" />
+			<zipfileset src="${lib.dir}/swt-win32.jar" />
+		</jar>
+		<jar destfile="redcannon-applet-gtk.jar">
+			<fileset dir="${build.dir}" includes="**/*.class" />
+			<zipfileset src="${lib.dir}/commons-lang.jar" />
+			<zipfileset src="${lib.dir}/swt-gtk.jar" />
 		</jar>
 	</target>
 
