@@ -15,8 +15,8 @@ public class DemoApplet extends JApplet {
 	private Thread gameThread;
 	
 	public void init() {
-		int width = Integer.parseInt("width");
-		int height = Integer.parseInt("height");
+		int width = Integer.parseInt(getParameter("width"));
+		int height = Integer.parseInt(getParameter("height"));
 		setSize(width, height);
 		setLayout(new java.awt.GridLayout(1, 1));
 		final java.awt.Canvas awtCanvas = new java.awt.Canvas();
