@@ -28,6 +28,13 @@
 		</javac>
 	</target>
 
+	<target name="build-applet" depends="compile">
+		<jar destfile="redcannon-applet.jar">
+			<fileset dir="${build.dir}" includes="**/*.class" />
+			<zipfileset src="${lib.dir}/commons-lang.jar" excludes="META-INF/*" />
+		</jar>
+	</target>
+
 	<target name="clean">
 		<delete dir="${build.dir}" />
 	</target>
