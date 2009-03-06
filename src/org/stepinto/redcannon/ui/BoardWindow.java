@@ -14,9 +14,9 @@ public class BoardWindow extends Thread {
 	private static final int MARGIN = 45;
 	private static final int UNIT_RADIUS = 22;
 
-	private static final int CANVAS_WIDTH = ChessGame.BOARD_WIDTH * GRID_SIZE
+	private static final int CANVAS_WIDTH = (ChessGame.BOARD_WIDTH-1) * GRID_SIZE
 			+ MARGIN * 2;
-	private static final int CANVAS_HEIGHT = ChessGame.BOARD_HEIGHT * GRID_SIZE
+	private static final int CANVAS_HEIGHT = (ChessGame.BOARD_HEIGHT-1) * GRID_SIZE 
 			+ MARGIN * 2;
 
 	private static final RGB GRID_COLOR = new RGB(149, 114, 59);
@@ -34,6 +34,7 @@ public class BoardWindow extends Thread {
 	private int state;
 	private Position targetPos;
 	private Position sourcePos;
+	private int userPlayer;  // EMPTY = user can move units of any color
 
 	// private Font unitTextFont;
 
@@ -41,18 +42,26 @@ public class BoardWindow extends Thread {
 	private Display display;
 	private Shell shell;
 	private Canvas canvas;
-
-	public BoardWindow() {
-		this(new BoardImage());
+	
+	public BoardWindow(BoardImage board) {
+		this(null, null, board);
 	}
 
-	public BoardWindow(BoardImage board) {
+	public BoardWindow(Display display, Shell shell, BoardImage board) {
+		this.display = display;
+		this.shell = shell;
 		this.board = board;
 		this.state = NO_INTERACTION;
+		this.userPlayer = ChessGame.EMPTY;
+	}
+	
+	public Move waitForUserMove() {
+		return waitForUserMove(ChessGame.EMPTY);
 	}
 
-	public Move waitForUserMove() {
+	public Move waitForUserMove(int color) {
 		state = WAIT_FOR_SELECT_UNIT;
+		userPlayer = color;
 		while (targetPos == null || sourcePos == null)
 			sleep(100);
 		Move ret = new Move(sourcePos, targetPos);
@@ -82,13 +91,10 @@ public class BoardWindow extends Thread {
 	}
 
 	private void createWindow() {
-		display = new Display();
-
-		// unitTextFont = new Font(display, UNIT_TEXT_FONT_NAME,
-		// UNIT_TEXT_FONT_SIZE, UNIT_TEXT_FONT_STYLE);
-
-		shell = new Shell();
-		shell.setSize(SWT.MIN, SWT.MIN);
+		if (display == null)
+			display = new Display();
+		if (shell == null)
+			shell = new Shell();
 		shell.setText(WINDOW_TITLE);
 
 		canvas = new Canvas(shell, SWT.DOUBLE_BUFFERED);
@@ -103,26 +109,21 @@ public class BoardWindow extends Thread {
 				if (e.button == 1) {
 					if (state == WAIT_FOR_SELECT_UNIT) {
 						Position pos = getClickedPosition(e.x, e.y);
-						if (!board.isEmptyAt(pos)) {
+						if (!board.isEmptyAt(pos) && (userPlayer == ChessGame.EMPTY || board.getColorAt(pos) == userPlayer)) {
 							sourcePos = pos;
 							state = WAIT_FOR_SELECT_TARGET;
 						}
 						redraw();
 					} else if (state == WAIT_FOR_SELECT_TARGET) {
-						Position pos = getClickedPosition(e.x, e.y);
-						// if (!board.isEmptyAt(pos)) {
-							if (board.getColorAt(pos) == board
-									.getColorAt(sourcePos)) {
-								sourcePos = pos;
-								state = WAIT_FOR_SELECT_TARGET;
-							} else {
-								targetPos = pos;
-								state = NO_INTERACTION;
-							}
-						// }
-					} else {
-						// sourcePos = null;
-						// state = WAIT_FOR_SELECT_UNIT;
+						Position pos = getClickedPosition(e.x, e.y);						
+						if (board.getColorAt(pos) == board
+								.getColorAt(sourcePos)) {
+							sourcePos = pos;
+							state = WAIT_FOR_SELECT_TARGET;
+						} else if (RuleEngine.isLegalMove(board, new Move(sourcePos, pos))) {
+							targetPos = pos;
+							state = NO_INTERACTION;
+						}
 					}
 					redraw();
 				}

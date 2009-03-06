@@ -24,14 +24,7 @@ public class EndgameDemo {
 	
 	private static Move getHumanMove(BoardImage board, int player, BoardWindow window) {
 		System.out.println("Wait for human-player...");
-		Move move = window.waitForUserMove();
-		System.out.println(move);
-		while (board.getColorAt(move.getSource()) != player || !RuleEngine.isLegalMove(board, move)) {
-			System.out.println("Invalid move!");
-			move = window.waitForUserMove();
-			System.out.println(move);
-		}
-		return move;
+		return window.waitForUserMove(player);
 	}
 	
 	public static void main(String args[]) throws Exception {
