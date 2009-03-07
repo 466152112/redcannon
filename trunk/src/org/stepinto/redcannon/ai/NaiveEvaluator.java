@@ -6,6 +6,14 @@ import org.stepinto.redcannon.ai.log.*;
 public class NaiveEvaluator implements Evaluator {
 	private final static int EVALUATE_THRESHOLD = 20;
 	
+	public NaiveEvaluator(UnitScoreTable unitScoreTable) {
+		this.unitScoreTable = unitScoreTable;
+	}
+	
+	public NaiveEvaluator() {
+		this(new NaiveUnitScoreTable());
+	}
+
 	private static int[] countUnits(BoardImage board) {
 		int result[] = new int [8];
 		for (int x = 0; x < ChessGame.BOARD_WIDTH; x++)
@@ -113,5 +121,5 @@ public class NaiveEvaluator implements Evaluator {
 			Move bestMove, int score) {
 	}
 	
-	private UnitScoreTable unitScoreTable = new NaiveUnitScoreTable();
+	private UnitScoreTable unitScoreTable;
 }
