@@ -43,8 +43,7 @@ public class NaiveSelector implements Selector {
 							} else {
 								if (killedUnit != ChessGame.EMPTY) {
 									reason = "killing move.";
-									priority = 10 + UnitScoreUtility
-											.getUnitScore(killedUnit);
+									priority = 10 + unitScoreTable.getUnitScore(target, killedUnit);
 								} else {
 									reason = "normal move.";
 									priority = 10;
@@ -73,6 +72,7 @@ public class NaiveSelector implements Selector {
 		// historyTable.dump(System.out);
 	}
 
+	private UnitScoreTable unitScoreTable = new NaiveUnitScoreTable();
 	private HistoryMoveTable historyTable = new HistoryMoveTable();
 	private KillerMoveTable killerTable = new KillerMoveTable();
 }
