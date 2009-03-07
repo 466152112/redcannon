@@ -1,6 +1,7 @@
 package org.stepinto.redcannon.ai.learn;
 
 import java.util.*;
+import org.apache.commons.lang.*;
 
 public class Individual {
 	public static final int ELEMENT_NUM = 8;
@@ -54,5 +55,9 @@ public class Individual {
 		BitSet bits = (BitSet)value.clone();
 		bits.flip(p);
 		return new Individual(bits);
+	}
+	
+	public String toString() {
+		return ArrayUtils.toString(toIntArray());
 	}
 }
