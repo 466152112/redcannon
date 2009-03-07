@@ -43,10 +43,12 @@ public class DemoApplet extends JApplet {
 			public void run() {
 				int humanPlayer = ChessGame.RED;
 				int aiPlayer = ChessGame.BLACK;
+				StateSet history = new StateSet();
 
 				while (true) {
 					// human moves
-					Move move = getHumanMove(board, humanPlayer);
+					history.add(board, humanPlayer);
+					Move move = getHumanMove(board, humanPlayer, history);
 					board.performMove(move);
 					repaint();
 					
@@ -56,7 +58,8 @@ public class DemoApplet extends JApplet {
 					}
 					
 					// ai moves
-					move = getAiMove(board, aiPlayer);
+					history.add(board, aiPlayer);
+					move = getAiMove(board, aiPlayer, history);
 					if (move == null) { // defeated?
 						showMessage("AI has given up!"); 
 						return;
@@ -82,17 +85,17 @@ public class DemoApplet extends JApplet {
 				});
 			}
 			
-			private Move getHumanMove(BoardImage board, int player) {
+			private Move getHumanMove(BoardImage board, int player, StateSet history) {
 				return boardWindow.waitForUserMove(player);
 			}
 			
-			private Move getAiMove(BoardImage board, int player) {
+			private Move getAiMove(BoardImage board, int player, StateSet history) {
 				TimeCounter tc = new TimeCounter();
 				tc.start();
 				
 				SearchEngine engine = new IterativeSearchEngine(board.duplicate(), player);
 				engine.addEvaluator(new NaiveEvaluator());
-				engine.addSelector(new NaiveSelector());
+				engine.addSelector(new NaiveSelector(history));
 				engine.setTimeLimit(AI_TIME_LIMIT);
 				
 				SearchResult result = engine.search();
