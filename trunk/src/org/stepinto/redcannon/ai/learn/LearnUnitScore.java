@@ -1,8 +1,7 @@
 package org.stepinto.redcannon.ai.learn;
 
 import java.util.*;
-
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.*;
 import org.stepinto.redcannon.ai.*;
 import org.stepinto.redcannon.common.*;
 
@@ -10,8 +9,8 @@ public class LearnUnitScore {
 	private int cpuNum = 2;
 	private int populationSize = 32;
 	private int generationNum = 32;
-	private double mutationRate = 0.2;
-	private double crossoverRate = 0.2;
+	private double mutationRate = 0.15;
+	private double crossoverRate = 0.15;
 	private boolean verbose = false;
 	
 	public int getCpuNum() {
@@ -76,23 +75,34 @@ public class LearnUnitScore {
 			System.out.println(">> Entering generation #" + i + "...");
 			
 			// crossover
-			for (int j = 0; j < crossoverRate * populationSize / 2; j++) {
+			System.out.println(">> Processing crossovers...");
+			for (int j = 0; j < crossoverRate * populationSize; j++) {
 				int p = 0; 
 				int q = 0;
 				while (p == q) {
 					p = random.nextInt(populationSize);
 					q = random.nextInt(populationSize);
 				}
-				individuals.add(Individual.crossover(random, individuals.get(p), individuals.get(q)));
+				Individual newIndividual = Individual.crossover(random, individuals.get(p), individuals.get(q)); 
+				individuals.add(newIndividual);
+				
+				if (verbose)
+					System.out.printf("%s and %s --> %s\n", individuals.get(p), individuals.get(q), newIndividual);
 			}
 			
 			// mutation
+			System.out.println(">> Processing mutations...");
 			for (int j = 0; j < mutationRate * populationSize; j++) {
 				int p = random.nextInt(populationSize);
-				individuals.add(individuals.get(p).mutate(random));
+				Individual newIndividual = individuals.get(p).mutate(random);
+				individuals.add(newIndividual);
+				
+				if (verbose)
+					System.out.printf("%s --> %s\n", individuals.get(p), newIndividual);
 			}
 			
 			// selection
+			System.out.println(">> Selecting good individuals...");
 			final Map<Individual, Integer> scores = Collections.synchronizedMap(new HashMap<Individual, Integer>());
 			for (Individual indv : individuals)
 				scores.put(indv, 0);
@@ -111,8 +121,7 @@ public class LearnUnitScore {
 			// print result
 			System.out.println(">> Generation #" + i + " results:"); 
 			for (Individual indv : individuals) {
-				System.out.printf("%s: %d\n", ArrayUtils.toString(indv.toIntArray()), 
-						scores.get(indv));
+				System.out.printf("%s: %d\n", indv, scores.get(indv));
 			}
 		}
 	}
