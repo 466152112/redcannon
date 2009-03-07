@@ -181,7 +181,7 @@ public class LearnUnitScore {
 				counter.start();
 				Move move = engine.search().getBestMove();
 				if (verbose)
-					System.out.printf("[%s] round %d: move = %s, time = %s\n", Thread.currentThread().getName(), round, move, counter.getTimeString());
+					System.out.printf("[%s] round %d: move = %s, time = %s, states = %d\n", Thread.currentThread().getName(), round, move, counter.getTimeString(), engine.getStatistics().getNumberOfStates());
 				
 				if (move == null)
 					return GameUtility.getOpponent(player);
