@@ -169,7 +169,7 @@ public class LearnUnitScore {
 			int player = ChessGame.RED;
 			int round = 0;
 			
-			while (round < 100) {
+			while (round < 200) {
 				TimeCounter counter = new TimeCounter();	
 				historyStates.add(board, player);
 				
