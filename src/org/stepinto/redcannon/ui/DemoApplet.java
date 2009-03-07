@@ -1,6 +1,8 @@
 package org.stepinto.redcannon.ui;
 
 import javax.swing.*;
+
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.*;
 import org.eclipse.swt.widgets.*;
 import org.stepinto.redcannon.ai.*;
@@ -13,6 +15,8 @@ public class DemoApplet extends JApplet {
 	private BoardImage board;
 	private Thread windowThread;
 	private Thread gameThread;
+	private Display display;
+	Shell shell;
 	
 	public void init() {
 		int width = Integer.parseInt(getParameter("width"));
@@ -25,8 +29,8 @@ public class DemoApplet extends JApplet {
 		windowThread = new Thread() {
 			@Override
 			public void run() {
-				Display display = new Display();
-				Shell shell = SWT_AWT.new_Shell(display, awtCanvas);
+				display = new Display();
+				shell = SWT_AWT.new_Shell(display, awtCanvas);
 				board = GameUtility.createStartBoard();
 				boardWindow = new BoardWindow(display, shell, board);
 				gameThread.start();
@@ -47,24 +51,35 @@ public class DemoApplet extends JApplet {
 					repaint();
 					
 					if (GameUtility.hasPlayerWon(board, humanPlayer)) {
-						System.out.println("Human has won!");
+						showMessage("Human has won!");
 						return;
 					}
 					
 					// ai moves
 					move = getAiMove(board, aiPlayer);
 					if (move == null) { // defeated?
-						System.out.println("AI has given up!"); 
+						showMessage("AI has given up!"); 
 						return;
 					}
 					board.performMove(move);
 					repaint();
 					
 					if (GameUtility.hasPlayerWon(board, aiPlayer)) {
-						System.out.println("AI has won!");
+						showMessage("AI has won!");
 						return;
 					}
 				}
+			}
+			
+			private void showMessage(final String message) {
+				display.syncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageBox messageBox = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+						messageBox.setMessage(message);
+						messageBox.open();
+					}
+				});
 			}
 			
 			private Move getHumanMove(BoardImage board, int player) {
