@@ -12,6 +12,8 @@ public class LearnUnitScore {
 	private double mutationRate = 0.15;
 	private double crossoverRate = 0.15;
 	private boolean verbose = false;
+	private int moveTime = 1000;
+	private boolean randomStart; 
 	
 	public int getCpuNum() {
 		return cpuNum;
@@ -61,13 +63,41 @@ public class LearnUnitScore {
 		this.verbose = verbose;
 	}
 
+	public int getMoveTime() {
+		return moveTime;
+	}
+
+	public void setMoveTime(int moveTime) {
+		this.moveTime = moveTime;
+	}
+
+	public boolean isRandomStart() {
+		return randomStart;
+	}
+
+	public void setRandomStart(boolean randomStart) {
+		this.randomStart = randomStart;
+	}
+
 	public void run() {
 		Random random = new Random();
 		ArrayList<Individual> individuals = new ArrayList<Individual>();
 		
 		// first fill individuals
-		for (int i = 0; i < populationSize; i++)
-			individuals.add(new Individual(NaiveUnitScoreTable.DEFAULT_TABLE));
+		if (randomStart) {
+			for (int i = 0; i < populationSize; i++) {
+				int array[] = new int [8];
+				array[0] = 0;
+				array[1] = 500;
+				for (int j = 2; j < array.length; j++)
+					array[j] = random.nextInt(16);
+				individuals.add(new Individual(array));
+			}
+		}
+		else {
+			for (int i = 0; i < populationSize; i++)
+				individuals.add(new Individual(NaiveUnitScoreTable.DEFAULT_TABLE));
+		}
 		
 		// re-produce
 		for (int i = 0; i < generationNum; i++) {			
@@ -111,7 +141,7 @@ public class LearnUnitScore {
 			for (int j = 0; j < individuals.size(); j++)
 				for (int k = 0; k < individuals.size(); k++)
 					if (j != k)
-						tournamentTasks.addTask(new TournamentTask(scores, individuals.get(j), individuals.get(k), verbose));
+						tournamentTasks.addTask(new TournamentTask(scores, individuals.get(j), individuals.get(k), moveTime, verbose));
 			tournamentTasks.executeAll();
 			
 			Collections.sort(individuals, new IndividualComparator(scores));
@@ -129,13 +159,15 @@ public class LearnUnitScore {
 	private static class TournamentTask implements Runnable {
 		private Map<Individual, Integer> scores;
 		private Individual red, black;
+		private int moveTime;
 		private boolean verbose;
 		
 		public TournamentTask(Map<Individual, Integer> scores, Individual red,
-				Individual black, boolean verbose) {
+				Individual black, int moveTime, boolean verbose) {
 			this.scores = scores;
 			this.red = red;
 			this.black = black;
+			this.moveTime = moveTime;
 			this.verbose = verbose;
 		}
 		
@@ -176,7 +208,7 @@ public class LearnUnitScore {
 				SearchEngine engine = new IterativeSearchEngine(board, player);
 				engine.addEvaluator(new NaiveEvaluator(player == ChessGame.RED ? redSt : blackSt));
 				engine.addSelector(new NaiveSelector(historyStates));
-				engine.setTimeLimit(5000);
+				engine.setTimeLimit(moveTime);
 				
 				counter.start();
 				Move move = engine.search().getBestMove();
@@ -209,7 +241,7 @@ public class LearnUnitScore {
 	
 	public static void main(String args[]) {
 		if (ArrayUtils.contains(args, "--help")) {
-			System.out.printf("%s --cpu [num] --population [num] --verbose\n", LearnUnitScore.class.getName());
+			System.out.printf("%s --cpu [num] --population [num] --move-time [s] --verbose --random-start \n", LearnUnitScore.class.getName());
 		}
 		else {
 			LearnUnitScore learner = new LearnUnitScore();
@@ -222,8 +254,15 @@ public class LearnUnitScore {
 					i++;
 					learner.setPopulationSize(Integer.parseInt(args[i]));
 				}
+				else if (args[i].equals("--move-time")) {
+					i++;
+					learner.setMoveTime(Integer.parseInt(args[i]));
+				}
 				else if (args[i].equals("--verbose")) {
 					learner.setVerbose(true);
+				}
+				else if (args[i].equals("--random-start")) {
+					learner.setRandomStart(true);
 				}
 			learner.run();
 		}
