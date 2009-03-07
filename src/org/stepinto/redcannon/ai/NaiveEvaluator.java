@@ -86,7 +86,7 @@ public class NaiveEvaluator implements Evaluator {
 		}
 		
 		// calculate unit-score-diff
-		int score = UnitScoreUtility.getUnitScoreDifference(board, player);
+		int score = unitScoreTable.getUnitScoreDifference(board, player);
 		if (Math.abs(score) > EVALUATE_THRESHOLD) {
 			String reason = "difference of board score exceeds threshold."; 
 			return new EvaluateResult(score, reason);
@@ -111,6 +111,7 @@ public class NaiveEvaluator implements Evaluator {
 	@Override
 	public void notifyBestMove(BoardImage board, int player, int depth,
 			Move bestMove, int score) {
-		
 	}
+	
+	private UnitScoreTable unitScoreTable = new NaiveUnitScoreTable();
 }
