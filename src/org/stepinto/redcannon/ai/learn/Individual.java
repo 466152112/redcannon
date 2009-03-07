@@ -5,7 +5,7 @@ import org.apache.commons.lang.*;
 
 public class Individual {
 	public static final int ELEMENT_NUM = 8;
-	public static final int BIT_LENGTH_PER_ELEMENT = 8;
+	public static final int BIT_LENGTH_PER_ELEMENT = 9;
 	public static final int TOTAL_LENGTH = ELEMENT_NUM * BIT_LENGTH_PER_ELEMENT;
 	
 	private BitSet value = new BitSet(TOTAL_LENGTH);
