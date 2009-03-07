@@ -1,5 +1,6 @@
 package org.stepinto.redcannon.ai;
 
+import java.io.*;
 import org.stepinto.redcannon.common.*;
 
 public class NaiveUnitScoreTable extends UnitScoreTable {
@@ -11,7 +12,7 @@ public class NaiveUnitScoreTable extends UnitScoreTable {
 	private final static int DEFAULT_ADVISOR_SCORE = 3;
 	private final static int DEFAULT_PAWN_SCORE = 1;
 	
-	private final static int DEFAULT_TABLE[] = new int[] {
+	public final static int DEFAULT_TABLE[] = new int[] {
 		0, // empty
 		DEFAULT_KING_SCORE,
 		DEFAULT_ROOK_SCORE,
@@ -36,5 +37,15 @@ public class NaiveUnitScoreTable extends UnitScoreTable {
 	public int getUnitScore(Position pos, int unit) {
 		assert(0 < unit && unit < table.length);
 		return table[unit];
+	}
+	
+	public void dump(PrintStream out) {
+		out.print("{");
+		for (int i = 0; i < table.length; i++) {
+			out.print(table[i]);
+			if (i < table.length - 1)
+				out.print(", ");
+		}
+		out.println("}");
 	}
 }
