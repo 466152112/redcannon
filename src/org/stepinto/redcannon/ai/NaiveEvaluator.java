@@ -1,5 +1,7 @@
 package org.stepinto.redcannon.ai;
 
+import java.util.*;
+
 import org.stepinto.redcannon.common.*;
 import org.stepinto.redcannon.ai.log.*;
 
@@ -118,7 +120,7 @@ public class NaiveEvaluator implements Evaluator {
 
 	@Override
 	public void notifyBestMove(BoardImage board, int player, int depth,
-			Move bestMove, int score) {
+			Move bestMove, int score, List<Candidate> candi) {
 	}
 	
 	private UnitScoreTable unitScoreTable;
