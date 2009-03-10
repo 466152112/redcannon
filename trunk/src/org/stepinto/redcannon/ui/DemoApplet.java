@@ -16,7 +16,7 @@ public class DemoApplet extends JApplet {
 	private Thread windowThread;
 	private Thread gameThread;
 	private Display display;
-	Shell shell;
+	private Shell shell;
 	
 	public void init() {
 		int width = Integer.parseInt(getParameter("width"));
