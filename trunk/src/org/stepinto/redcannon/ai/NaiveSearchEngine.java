@@ -108,9 +108,9 @@ public class NaiveSearchEngine implements SearchEngine {
 		
 		// notify best-move
 		for (Evaluator e : evaluators)
-			e.notifyBestMove(board, player, depth, bestMove, alpha);
+			e.notifyBestMove(board, player, depth, bestMove, alpha, candi);
 		for (Selector s : selectors)
-			s.notifyBestMove(board, player, depth, bestMove, alpha);
+			s.notifyBestMove(board, player, depth, bestMove, alpha, candi);
 		
 		if (logger != null)
 			printLeaveStateMessage(bestMove, candi, candiScore);

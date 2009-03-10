@@ -63,7 +63,7 @@ public class NaiveSelector implements Selector {
 
 	@Override
 	public void notifyBestMove(BoardImage board, int player, int depth,
-			Move bestMove, int score) {
+			Move bestMove, int score, List<Candidate> candi) {
 		if (bestMove != null) {
 			historyTable.addMove(bestMove);
 			killerTable.addMove(depth, bestMove);
