@@ -55,7 +55,7 @@ public class SelfGameTest {
 			System.out.println();
 			
 			board.performMove(result.getBestMove());
-			window.selectUnit(result.getBestMove().getTarget());
+			window.setSelectedUnit(result.getBestMove().getTarget());
 			window.redraw();
 			if (GameUtility.hasPlayerWon(board, player)) {
 				System.out.println(GameUtility.getColorName(player) + " has won.");

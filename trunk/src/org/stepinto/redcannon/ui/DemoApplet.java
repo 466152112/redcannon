@@ -41,36 +41,41 @@ public class DemoApplet extends JApplet {
 		gameThread = new Thread() {
 			@Override
 			public void run() {
-				int humanPlayer = ChessGame.RED;
-				int aiPlayer = ChessGame.BLACK;
-				StateSet history = new StateSet();
-
-				while (true) {
-					// human moves
-					history.add(board, humanPlayer);
-					Move move = getHumanMove(board, humanPlayer, history);
-					board.performMove(move);
-					repaint();
-					
-					if (GameUtility.hasPlayerWon(board, humanPlayer)) {
-						showMessage("Human has won!");
-						return;
+				try {
+					int humanPlayer = ChessGame.RED;
+					int aiPlayer = ChessGame.BLACK;
+					StateSet history = new StateSet();
+	
+					while (true) {
+						// human moves
+						history.add(board, humanPlayer);
+						Move move = getHumanMove(board, humanPlayer, history);
+						board.performMove(move);
+						repaint();
+						
+						if (GameUtility.hasPlayerWon(board, humanPlayer)) {
+							showMessage("Human has won!");
+							return;
+						}
+						
+						// ai moves
+						history.add(board, aiPlayer);
+						move = getAiMove(board, aiPlayer, history);
+						if (move == null) { // defeated?
+							showMessage("AI has given up!"); 
+							return;
+						}
+						board.performMove(move);
+						repaint();
+						
+						if (GameUtility.hasPlayerWon(board, aiPlayer)) {
+							showMessage("AI has won!");
+							return;
+						}
 					}
-					
-					// ai moves
-					history.add(board, aiPlayer);
-					move = getAiMove(board, aiPlayer, history);
-					if (move == null) { // defeated?
-						showMessage("AI has given up!"); 
-						return;
-					}
-					board.performMove(move);
-					repaint();
-					
-					if (GameUtility.hasPlayerWon(board, aiPlayer)) {
-						showMessage("AI has won!");
-						return;
-					}
+				}
+				catch (InterruptedException ex) {
+					ex.printStackTrace();
 				}
 			}
 			
@@ -85,7 +90,7 @@ public class DemoApplet extends JApplet {
 				});
 			}
 			
-			private Move getHumanMove(BoardImage board, int player, StateSet history) {
+			private Move getHumanMove(BoardImage board, int player, StateSet history) throws InterruptedException {
 				return boardWindow.waitForUserMove(player);
 			}
 			

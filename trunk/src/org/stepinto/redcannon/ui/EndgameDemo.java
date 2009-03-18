@@ -22,7 +22,7 @@ public class EndgameDemo {
 		return result.getBestMove();
 	}
 	
-	private static Move getHumanMove(BoardImage board, int player, BoardWindow window) {
+	private static Move getHumanMove(BoardImage board, int player, BoardWindow window) throws InterruptedException{
 		System.out.println("Wait for human-player...");
 		return window.waitForUserMove(player);
 	}
