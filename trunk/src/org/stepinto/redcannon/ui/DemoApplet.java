@@ -75,7 +75,6 @@ public class DemoApplet extends JApplet {
 					}
 				}
 				catch (InterruptedException ex) {
-					ex.printStackTrace();
 				}
 			}
 			
