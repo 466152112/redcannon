@@ -25,6 +25,11 @@ public class StateSet {
 		hash.add(key);
 	}
 	
+	public void remove(BoardImage board, int player) {
+		long key = getHashKey(board, player);
+		hash.remove(key); 
+	}
+	
 	private long getHashKey(BoardImage board, int player) {
 		long boardZobrist = board.getZobristCode();
 		switch (player) {
