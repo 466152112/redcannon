@@ -8,7 +8,7 @@ import org.stepinto.redcannon.common.*;
 public class LearnUnitScore {
 	private int cpuNum = 2;
 	private int populationSize = 32;
-	private int generationNum = 32;
+	private int generationNum = 256;
 	private double mutationRate = 0.15;
 	private double crossoverRate = 0.15;
 	private boolean verbose = false;
@@ -256,7 +256,7 @@ public class LearnUnitScore {
 				}
 				else if (args[i].equals("--move-time")) {
 					i++;
-					learner.setMoveTime(Integer.parseInt(args[i]));
+					learner.setMoveTime((int)(Double.parseDouble(args[i]) * 1000));
 				}
 				else if (args[i].equals("--verbose")) {
 					learner.setVerbose(true);
