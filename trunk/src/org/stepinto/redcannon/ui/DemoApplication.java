@@ -1,5 +1,6 @@
 package org.stepinto.redcannon.ui;
 
+import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -23,25 +24,69 @@ public class DemoApplication implements Runnable {
 	private Shell shell;
 	private Display display;
 	private BoardControl boardControl;
+	private Button newButton;
 	private Button undoButton;
 	private Button quitButton;
+	private Text debugMessageTextBox; 
+	
 	private Thread currentPlayerThinkThread;
 	
 	// async
 	// wait-for-user-move --> perform-move --> think --> perform-move
 	//            +------> undo --> wait-for-user-move...
-	private class ThinkThread extends Thread {		
+	private class WaitForAiMoveThread extends Thread {		
 		@Override
 		public void run() {	
+			printDebugMessage("Waiting for AI to move...");
+			
 			SearchEngine engine = new IterativeSearchEngine(board.duplicate(), player);
+			TimeCounter counter = new TimeCounter(); 
 			engine.addEvaluator(new NaiveEvaluator());
 			engine.addSelector(new NaiveSelector(history));
 			engine.setTimeLimit(AI_TIME_LIMIT);
-				
+			counter.start();
+			
 			SearchResult result = engine.search();
 			Move move = result.getBestMove();
-			display.syncExec(new PerformMoveThread(move));
-			new WaitForNextPlayerThread().start();
+			printDebugMessage(String.format(" %s\n", counter.getTimeString()));
+			printDebugMessage(result);
+			printDebugMessage(engine.getStatistics());
+			
+			if (move == null)
+				printDebugMessage("You have won!");
+			else {
+				display.syncExec(new PerformMoveThread(move));
+				new WaitForNextPlayerThread().start();
+			}
+		}
+		
+		private void printDebugMessage(SearchResult result) {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			result.dump(new PrintStream(stream));
+			printDebugMessage(stream.toString());
+		}
+		
+		private void printDebugMessage(Statistics stat) {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			stat.dump(new PrintStream(stream));
+			printDebugMessage(stream.toString());
+		}
+		
+		private void printDebugMessage(String message) {
+			display.syncExec(new PrintDebugMessageThread(message));
+		}
+	}
+	
+	private class PrintDebugMessageThread extends Thread {
+		private String message;
+		
+		public PrintDebugMessageThread(String message) {
+			this.message = message;
+		}
+		
+		@Override
+		public void run() {
+			debugMessageTextBox.append(message);
 		}
 	}
 	
@@ -86,12 +131,13 @@ public class DemoApplication implements Runnable {
 		public void run() {
 			try {
 				display.syncExec(new EnableUndoButtonThread(canUndo()));
+				display.syncExec(new PrintDebugMessageThread("Waiting for user to move...\n"));
 				
 				Move move = boardControl.waitForUserMove(player);
 				display.syncExec(new PerformMoveThread(move));
-				new WaitForNextPlayerThread().start();
-				
+				display.syncExec(new PrintDebugMessageThread(String.format("User moves: %s\n", move)));
 				display.syncExec(new EnableUndoButtonThread(false));
+				new WaitForNextPlayerThread().start();
 			}
 			catch (InterruptedException ex) {
 			}
@@ -103,7 +149,7 @@ public class DemoApplication implements Runnable {
 		public void run() {
 			player = GameUtility.getOpponent(player);
 			if (isCurrentPlayerAi())
-				currentPlayerThinkThread = new ThinkThread();
+				currentPlayerThinkThread = new WaitForAiMoveThread();
 			else
 				currentPlayerThinkThread = new WaitForUserMoveThread();
 			currentPlayerThinkThread.start();
@@ -111,78 +157,40 @@ public class DemoApplication implements Runnable {
 	}
 	
 	public DemoApplication() {
-		this(GameUtility.createStartBoard());
+		this(new Display(), new Shell());
 	}
 	
-	public DemoApplication(BoardImage board) {
-		this(new Display(), new Shell(), board);
+	public DemoApplication(Display display, Shell shell) {
+		this.display = display;
+		this.shell = shell;
 	}
 	
-	public DemoApplication(Display display, Shell shell, BoardImage board) {
+	private void newGame(BoardImage board) {
 		this.isRedAi = false;
 		this.isBlackAi = true;
 		this.undoStack = new Stack<GameState>();
 		this.history = new StateSet();
-		
-		this.display = display;
-		this.shell = shell;
 		this.board = board;
-		   
-		// set layout
-		shell.setLayout(new GridLayout(2, false));
+		player = ChessGame.BLACK;
 		
-		// create controls
-		// board control
-		GridData boardControlGridData = new GridData();
-		boardControl = new BoardControl(shell, board);
-		boardControlGridData.minimumWidth = boardControl.getSize().x;
-		boardControlGridData.minimumHeight = boardControl.getSize().y;
-		boardControlGridData.grabExcessHorizontalSpace = true;
-		boardControlGridData.grabExcessVerticalSpace = true;
-		boardControl.setLayoutData(boardControlGridData);
-		
-		// panel
-		Composite panel = new Composite(shell, SWT.NONE);
-		panel.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-		panel.setLayout(new GridLayout(1, false));
-		undoButton = new Button(panel, SWT.PUSH);
-		undoButton.setText("&Undo");
-		undoButton.setEnabled(false);
-		undoButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
-		undoButton.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				undoButtonClicked();
-			}
-		});
-		quitButton = new Button(panel, SWT.PUSH);
-		quitButton.setText("&Quit");
-		quitButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
-		quitButton.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				quitButtonClicked();
-			}
-		});
-		panel.pack();
-		
-		shell.pack();
-		shell.open();
+		if (currentPlayerThinkThread != null)
+			currentPlayerThinkThread.interrupt();
+		new WaitForNextPlayerThread().start();
 	}
 	
-	public void quitButtonClicked() {
+	private void newButtonClicked() {
+		newGame(GameUtility.createStartBoard());
+		boardControl.setBoard(board);
+		boardControl.redraw();
+		
+		printDebugMessage("New game started.\n");
+	}
+	
+	private void quitButtonClicked() {
 		System.exit(0);
 	}
 	
-	public void undoButtonClicked() {
+	private void undoButtonClicked() {
 		if (!isCurrentPlayerAi()) {
 			currentPlayerThinkThread.interrupt();
 			
@@ -212,11 +220,88 @@ public class DemoApplication implements Runnable {
 		return isAiPlayer(player);
 	}
 	
+	private void createWindow() {
+		// set layout
+		shell.setLayout(new GridLayout(2, false));
+		
+		// create controls
+		// board control
+		GridData boardControlGridData = new GridData();
+		boardControl = new BoardControl(shell, board);
+		boardControlGridData.minimumWidth = boardControl.getSize().x;
+		boardControlGridData.minimumHeight = boardControl.getSize().y;
+		boardControlGridData.grabExcessHorizontalSpace = true;
+		boardControlGridData.grabExcessVerticalSpace = true;
+		boardControl.setLayoutData(boardControlGridData);
+		
+		// panel
+		Composite panel = new Composite(shell, SWT.NONE);
+		panel.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+		panel.setLayout(new GridLayout(1, false));
+		newButton = new Button(panel, SWT.PUSH);
+		newButton.setText("&New");
+		newButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+		newButton.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				newButtonClicked();
+			}
+		});
+		
+		undoButton = new Button(panel, SWT.PUSH);
+		undoButton.setText("&Undo");
+		undoButton.setEnabled(false);
+		undoButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+		undoButton.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				undoButtonClicked();
+			}
+		});
+		quitButton = new Button(panel, SWT.PUSH);
+		quitButton.setText("&Quit");
+		quitButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+		quitButton.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				quitButtonClicked();
+			}
+		});
+		
+		// debug-message-text-box
+		debugMessageTextBox = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+		debugMessageTextBox.setEditable(false);
+		GridData debugMessageTextBoxGridData = new GridData();
+		debugMessageTextBoxGridData.horizontalSpan = 2;
+		debugMessageTextBoxGridData.horizontalAlignment = GridData.FILL;
+		debugMessageTextBoxGridData.heightHint = 100;
+		debugMessageTextBox.setLayoutData(debugMessageTextBoxGridData);
+		panel.pack();
+		
+		shell.pack();
+		shell.open();
+	}
+	
+	private void printDebugMessage(String message) {
+		debugMessageTextBox.append(message);
+	}
+	
 	@Override
 	public void run() {
-		player = ChessGame.BLACK;
-		new WaitForNextPlayerThread().start();
-		
+		newGame(GameUtility.createStartBoard());
+		createWindow();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
