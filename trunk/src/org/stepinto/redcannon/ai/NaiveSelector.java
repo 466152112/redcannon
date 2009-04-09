@@ -71,6 +71,20 @@ public class NaiveSelector implements Selector {
 		// if (depth == 0)
 		// historyTable.dump(System.out);
 	}
+	
+	public UnitScoreTable getUnitScoreTable() {
+		return unitScoreTable;
+	}
+
+	public HistoryMoveTable getHistoryTable() {
+		return historyTable;
+	}
+
+	public KillerMoveTable getKillerTable() {
+		return killerTable;
+	}
+
+
 
 	private UnitScoreTable unitScoreTable = new NaiveUnitScoreTable();
 	private HistoryMoveTable historyTable = new HistoryMoveTable();
