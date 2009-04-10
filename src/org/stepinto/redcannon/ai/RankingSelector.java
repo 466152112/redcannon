@@ -3,6 +3,7 @@ package org.stepinto.redcannon.ai;
 import java.io.*;
 import java.util.*;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.stepinto.redcannon.ai.learn.*;
 import org.stepinto.redcannon.ai.log.*;
 import org.stepinto.redcannon.common.*;
@@ -57,7 +58,7 @@ public class RankingSelector implements Selector {
 			Move bestMove, int score, List<Candidate> candi) {
 		naive.notifyBestMove(board, player, depth, bestMove, score, candi);
 		
-		if (bestMove != null) {
+		if (bestMove != null && dumpTrainingCasesStream != null) {
 			CandidateWithProperties bestCandi = null;
 			for (Candidate c : candi)
 				if (c instanceof CandidateWithProperties && c.getMove().equals(bestMove)) {
@@ -68,12 +69,10 @@ public class RankingSelector implements Selector {
 			double bestCandiProp[] = bestCandi.getProperties();
 			for (Candidate c : candi)
 				if (c instanceof CandidateWithProperties) {
-					if (c == bestCandi)
-						break;
+					//if (c == bestCandi)
+					//	break;
 					double currentProp[] = ((CandidateWithProperties)c).getProperties();
-					
-					if (dumpTrainingCasesStream != null)
-						printTrainingCase(dumpTrainingCasesStream, bestCandiProp, currentProp);
+					printTrainingCase(dumpTrainingCasesStream, bestCandiProp, currentProp);
 				}
 		}
 	}
