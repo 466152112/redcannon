@@ -1,12 +1,18 @@
 #!/bin/bash
 
-uname | grep -iq cygwin
+uname | grep -iq 'cygwin'
 if [ $? -eq 0 ]
 then
 	swt=swt-win32.jar
 	sep=';'
 else
-	swt=swt-gtk.jar
+	arch | grep -iq 'x86_64'
+	if [ $? -eq 0 ]
+	then
+		swt=swt-gtk-amd64.jar
+	else
+		swt=swt-gtk.jar
+	fi
 	sep=':'
 fi
 
